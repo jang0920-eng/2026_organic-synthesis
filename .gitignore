@@ -1,0 +1,26 @@
+# 모델 · 재고 데이터 (용량이 커서 repo 바깥에 둠)
+aizynth-data/
+*.hdf5
+*.onnx
+*.ckpt
+*.pt
+*.pth
+*.gzip
+
+# 머신마다 경로가 다른 설정
+config.yml
+config_local.yml
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+env/
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
