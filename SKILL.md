@@ -41,6 +41,15 @@ mkdir "$env:USERPROFILE\github\aizynth-data"
 download_public_data "$env:USERPROFILE\github\aizynth-data"
 ```
 
+`download_public_data`가 받는 파일과 자동으로 만드는 `config.yml`은 다음과 같다. `config.yml` 안의 경로는 내려받은 폴더의 절대경로로 채워진다.
+
+| 구분 | 이름 | 파일 |
+|---|---|---|
+| expansion policy | `uspto` | `uspto_model.onnx`, `uspto_templates.csv.gz` |
+| expansion policy | `ringbreaker` | `uspto_ringbreaker_model.onnx`, `uspto_ringbreaker_templates.csv.gz` |
+| filter policy | `uspto` | `uspto_filter_model.onnx` |
+| stock | `zinc` | `zinc_stock.hdf5` |
+
 ### SynthEx
 <!-- TODO -->
 
@@ -67,7 +76,8 @@ download_public_data "$env:USERPROFILE\github\aizynth-data"
    aizynthcli --config "$env:USERPROFILE\github\aizynth-data\config.yml" --smiles "<SMILES>"
    ```
 
-   - 출력: 탐색 통계는 터미널에, 상위 경로는 `trees.json`에 저장된다.
+   - 별도 옵션이 없으면 expansion policy `uspto`, filter policy `uspto`, stock `zinc`가 사용된다.
+   - 출력: 탐색 통계는 터미널에, 상위 경로는 `trees.json`에 저장된다 (`--output`으로 파일 이름 지정 가능).
    - <!-- TODO: trees.json 구조, 상위 3개 경로 추출 방법 -->
 2. **경로 예측 (SynthEx)**: <!-- TODO -->
 3. **단계별 반응 SMILES 추출**: <!-- TODO -->
