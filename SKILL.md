@@ -1,119 +1,102 @@
 ---
-name: drug-synthesis-route-report
-description: 물질명 또는 SMILES를 입력받아, 공개 AI 모델로 합성경로·합성조건·산출율을 예측하고 그 결과를 종합한 합성 보고서를 작성한다. 신약·의약품 분자의 역합성 분석이나 합성 계획 보고서가 필요할 때 사용한다.
+name: synthesis-route-report
+description: 약물 이름 또는 SMILES가 주어지면 AI 모델로 합성 경로, 합성 조건, 수율을 예측하고 그 결과를 정리한 한국어 합성 보고서(docx/pdf, 20쪽 이하)를 작성한다.
 ---
 
-# 신약 합성경로 예측 보고서 작성
+# 합성 경로 예측 보고서 스킬
 
-## 이 스킬이 하는 일
+이 스킬은 주어진 약물에 대해 여섯 개의 AI 모델(경로 2, 조건 2, 수율 2)을 실행하고, 그 결과를 모아 합성 실험 결론까지 담은 보고서를 작성한다.
 
-사용자가 물질 하나를 지정하면, 세 종류의 공개 AI 모델을 순서대로 실행해 예측 결과를 모으고, 그것을 하나의 합성 보고서로 정리한다.
+## 1. 입력
 
-| 단계 | 예측 대상 | 사용 모델 |
+다음 중 하나를 받는다.
+
+- 약물 이름 (예: `Sotorasib`)
+- SMILES 문자열 (예: `CC(=O)Nc1ccc(O)cc1`)
+
+이름만 주어지면 PubChem에서 canonical SMILES를 찾아 사용하고, 사용한 SMILES를 보고서에 적는다.
+
+## 2. 사용하는 모델
+
+| 역할 | 모델 | GitHub |
 |---|---|---|
-| 1 | 합성경로 (역합성) | AiZynthFinder, Synthex |
-| 2 | 합성조건 (용매·시약·촉매·온도) | ASKCOS context recommender, Parrot |
-| 3 | 산출율 | rxn_yields, DRFP |
+| 합성 경로 | AiZynthFinder | https://github.com/MolecularAI/aizynthfinder |
+| 합성 경로 | SynthEx | https://github.com/schwallergroup/synthex/tree/submission |
+| 합성 조건 | ASKCOS context recommender | https://gitlab.com/mlpds_mit/askcosv2/context_recommender |
+| 합성 조건 | Parrot | https://github.com/wangxr0526/Parrot |
+| 수율 | Yield-BERT (rxn_yields) | https://github.com/rxn4chemistry/rxn_yields |
+| 수율 | DRFP | https://github.com/reymond-group/drfp |
 
-모델 저장소는 다음과 같다.
+## 3. 환경 설치
 
-- 합성경로: https://github.com/MolecularAI/aizynthfinder · https://github.com/schwallergroup/synthex/tree/submission
-- 합성조건: https://gitlab.com/mlpds_mit/askcosv2/context_recommender · https://github.com/wangxr0526/Parrot
-- 산출율: https://github.com/rxn4chemistry/rxn_yields · https://github.com/reymond-group/drfp
+<!-- TODO: 모델별 conda 환경과 설치 명령어 -->
 
-## 입력
+### AiZynthFinder
 
-사용자는 다음 중 하나를 준다.
+```powershell
+conda create -n aizynth-env python=3.11 -y
+conda activate aizynth-env
+pip install aizynthfinder==4.4.1 pyarrow==17.0.0 onnxruntime==1.19.2
+mkdir "$env:USERPROFILE\github\aizynth-data"
+download_public_data "$env:USERPROFILE\github\aizynth-data"
+```
 
-- 물질명 (예: `소토라십`, `Sotorasib`, `AMG 510`)
-- SMILES 문자열
-
-물질명만 주어진 경우 SMILES로 변환한 뒤 RDKit으로 파싱이 되는지 확인한다. `Chem.MolFromSmiles`가 `None`을 반환하면 더 진행하지 말고 사용자에게 알린다.
-
-입력이 모호하면(동명의 다른 물질, 염 형태 여부 등) 추측하지 말고 한 번 되묻는다.
-
-## 실행 순서
-
-<!-- TODO: 각 모델을 붙일 때마다 실제 명령어와 출력 형식을 이 절에 기록한다. -->
-
-### 0. 환경 확인
-
+### SynthEx
 <!-- TODO -->
 
-### 1. 합성경로 예측
+### ASKCOS context recommender
+<!-- TODO -->
 
-<!-- TODO: aizynthcli 명령어, config.yml 경로, 출력 json 구조, 상위 경로 선별 기준 -->
+### Parrot
+<!-- TODO -->
 
-경로가 제대로 나왔는지는 다음으로 판정한다.
+### rxn_yields
+<!-- TODO -->
 
-- `is_solved`가 `True`인지
-- `number_of_solved_routes`가 1 이상인지
-- `number_of_steps`가 3 이상인지 — 1~2단계로 끝나는 경로는 거대한 중간체를 구매 가능 물질로 처리한 경우이므로 신뢰하지 않는다
+### DRFP
+<!-- TODO -->
 
-상위 5개 경로 중 위 조건을 모두 만족하는 것이 하나도 없으면, 그 사실을 보고서의 한계점 절에 기록한다.
+## 4. 실행 순서
 
-### 2. 합성조건 예측
+<!-- TODO: 모델을 하나씩 붙일 때마다 명령어와 출력 형식을 채운다 -->
 
-<!-- TODO: context_recommender / Parrot 실행 명령어와 출력 형식 -->
+1. **경로 예측 (AiZynthFinder)**
 
-### 3. 산출율 예측
+   ```powershell
+   conda activate aizynth-env
+   aizynthcli --config "$env:USERPROFILE\github\aizynth-data\config.yml" --smiles "<SMILES>"
+   ```
 
-<!-- TODO: rxn_yields / DRFP 실행 명령어와 출력 형식 -->
+   - 출력: 탐색 통계는 터미널에, 상위 경로는 `trees.json`에 저장된다.
+   - <!-- TODO: trees.json 구조, 상위 3개 경로 추출 방법 -->
+2. **경로 예측 (SynthEx)**: <!-- TODO -->
+3. **단계별 반응 SMILES 추출**: <!-- TODO -->
+4. **합성 조건 예측 (Parrot, ASKCOS)**: <!-- TODO -->
+5. **수율 예측 (Yield-BERT, DRFP)**: <!-- TODO -->
+6. **구조 이미지 생성 (RDKit)**: <!-- TODO -->
+7. **결과 취합**: <!-- TODO: 모든 결과를 하나의 json으로 모으는 방법 -->
+8. **보고서 작성**: 아래 5~6절에 따라 작성한다.
 
-### 4. 구조 이미지 생성
+## 5. 보고서 목차
 
-<!-- TODO: 경로 이미지와 중간체 구조 이미지를 생성하는 명령어. graphviz dot 필요 -->
+보고서는 docx 또는 pdf로, 20쪽 이하로 작성한다.
 
-모든 단계의 중간체 구조와 전체 합성경로는 반드시 이미지로 만들어 보고서에 삽입한다. 텍스트 SMILES만으로 경로를 서술하지 않는다.
+1. **요약**: 대상 물질, 예측된 최적 경로, 예상 총수율, 핵심 결론을 반 쪽 이내로 쓴다.
+2. **대상 물질과 선정 이유** (필수): 물질의 구조, 용도, 이 물질을 고른 이유를 쓴다.
+3. **사용한 AI 모델과 방법**: 2절의 표를 넣고, 각 모델이 무엇을 입력받아 무엇을 출력하는지 쓴다.
+4. **예측 합성 경로** (필수): 경로마다 단계별 반응식을 구조 이미지로 넣고, 단계마다 반응 유형과 메커니즘(친핵체, 친전자체, 이탈기 등)을 설명한다.
+5. **단계별 합성 조건** (필수): 단계마다 용매, 시약, 촉매, 온도를 표로 정리하고 두 모델의 예측을 비교한다.
+6. **단계별 예측 수율** (필수): 단계별 수율과 총수율을 표로 정리하고 두 모델의 예측을 비교한다.
+7. **종합 결론**: 모든 모델의 결과를 취합해 실제로 시도할 합성 경로와 조건을 제안한다.
+8. **AI 모델의 성능과 한계점** (필수): 예측이 실패하거나 문헌과 다른 경우를 구체적으로 정리한다.
+9. **추가 분석** (선택): <!-- TODO: MOPAC, EPI Suite, Discovery Studio, 하네스 비교 -->
+10. **참고문헌**
 
-## 보고서 작성
+## 6. 작성 규칙
 
-### 분량과 형식
+<!-- TODO: 첫 보고서를 생성한 뒤 어색한 부분을 보고 다듬는다 -->
 
-- 최대 20장
-- docx 또는 pdf
-- 구조 정보는 이미지로 첨부한다
-
-### 목차
-
-1. **서론 — 대상 물질 선정**
-   물질이 무엇이고 어떤 표적에 작용하는지. 이 물질을 합성경로 예측 대상으로 고른 이유를 분명히 쓴다. 문헌에 실측 합성 데이터가 있어 AI 예측과 비교할 수 있는지, 주요 변환이 예측 모델의 학습 도메인에 들어오는지 등을 근거로 든다.
-
-2. **예측 방법**
-   사용한 모델 여섯 개를 각각 무엇을 예측하는 데 썼는지, 어떤 버전·설정으로 돌렸는지. 저장소 주소를 함께 적는다.
-
-3. **합성경로 예측 결과**
-   모델이 제시한 경로를 단계별로 서술하고 이미지로 보인다. 여러 경로가 나왔으면 비교한다.
-
-4. **합성조건 예측 결과**
-   각 단계의 용매·시약·촉매·온도. 두 모델의 추천이 다르면 어떻게 다른지 밝힌다.
-
-5. **산출율 예측 결과**
-   단계별 예측 수율과 전체 수율. 문헌 실측값이 있으면 나란히 놓고 차이를 논한다.
-
-6. **종합 — 합성 실험에 대한 결론**
-   세 종류의 예측을 합쳐서, 실제로 이 경로로 실험한다면 무엇을 선택하고 무엇을 주의해야 하는지. 모델별 결과를 단순히 나열하지 말고 하나의 판단으로 묶는다.
-
-7. **AI 모델의 성능 및 한계점**
-   예측이 실패한 경우를 빠뜨리지 않고 정리한다. 모델이 인식하지 못한 입체화학, 학습 도메인을 벗어난 반응, 서로 모순되는 추천 등. 이 절은 보고서의 신뢰도를 보이는 부분이므로 실패를 숨기지 않는다.
-
-### 문체 지침
-
-<!--
-이 절은 보고서의 문장 품질을 결정한다. 보고서 글이 어색하면 사람이 보고서를 직접 고치는 대신 이 지침을 고쳐서 다시 생성한다.
--->
-
-- 한국어로 쓴다. 평서문 종결(`-다`)을 사용하고, 경어체를 섞지 않는다.
-- 전문 용어는 한국어 표기를 먼저 쓰고 처음 나올 때만 괄호로 원어를 붙인다. 예: 역합성(retrosynthesis). 이후에는 한국어 표기만 쓴다.
-- 한 문장에 하나의 사실만 담는다. 접속사로 세 절 이상 이어 붙이지 않는다.
-- 숫자는 단위와 함께 쓰고, 출처가 예측값인지 문헌 실측값인지 매번 구분해 밝힌다.
-- 모델의 출력을 사실로 단정하지 않는다. "예측하였다", "제시하였다"로 쓰고, 검증되지 않은 값에 "확인되었다"를 쓰지 않는다.
-- 불릿은 병렬 항목을 나열할 때만 쓴다. 설명이나 논증은 문단으로 쓴다.
-- "본 보고서에서는", "살펴보고자 한다" 같은 상투적인 서론 표현을 쓰지 않는다. 바로 내용으로 들어간다.
-- 같은 문장 구조를 연달아 반복하지 않는다.
-
-## 주의
-
-- 모델이 예측하지 못한 항목을 빈칸으로 남기지 말고, 예측에 실패했다는 사실을 명시한다.
-- 문헌값을 인용할 때는 출처를 밝히고, 2차 출처(요약 기사 등)인 경우 그 사실을 적는다.
-- 모델 출력 json은 `results/`에 남겨 재현 가능하게 한다.
+- 한국어 문어체(~이다, ~한다)로 쓴다.
+- 수치는 모델 출력값을 그대로 쓰고, 계산값이나 추정값은 "추정값"이라고 표시한다.
+- 모델 출력에 없는 내용을 지어내지 않는다. 결과가 없으면 "예측 실패"로 적고 8장에 정리한다.
+- 그림과 표에는 번호와 제목을 붙인다.
