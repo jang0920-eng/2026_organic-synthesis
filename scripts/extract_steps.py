@@ -17,6 +17,11 @@
 단계 번호
     역합성 트리에서 깊은 reaction 노드가 먼저 일어나는 반응이다.
     깊이 내림차순으로 정렬하면 정반응 순서가 된다 (위상 정렬).
+
+    같은 깊이에 여러 반응이 있으면 (= 서로 독립인 가지) 서브트리가 깊은 쪽을 먼저 쓴다.
+    긴 쪽이 주 사슬이고 짧은 쪽이 분기이므로, 주 사슬이 연속 번호로 이어지고
+    분기가 그 뒤에 와서 보고서에서 읽기 좋다. 독립인 가지의 순서는 어느 쪽이든
+    위상 정렬상 유효하고 화학적으로도 같다.
 """
 
 import argparse
@@ -33,16 +38,27 @@ for _stream in (sys.stdout, sys.stderr):
 
 
 def collect_reactions(route):
-    """경로 트리에서 (깊이, 생성물 SMILES, reaction 노드)를 DFS 순서로 모은다."""
+    """경로 트리에서 reaction 노드를 DFS 순서로 모은다.
+
+    각 항목: [깊이, 그 반응 아래 서브트리의 최대 깊이, DFS 순번, 생성물 SMILES, reaction 노드]
+    서브트리 최대 깊이는 같은 깊이의 가지 중 어느 쪽이 주 사슬인지 가리는 데 쓴다.
+    """
     found = []
 
     def walk(mol_node, depth):
+        """이 mol 노드 아래에 있는 반응 중 가장 깊은 것의 깊이를 돌려준다."""
+        deepest = depth - 1  # 잎이면 (반응이 없으면) 자기보다 얕은 값
         for rxn in mol_node.get("children") or []:
             if rxn.get("type") != "reaction":
                 continue
-            found.append((depth, mol_node["smiles"], rxn))
+            idx = len(found)
+            found.append([depth, depth, idx, mol_node["smiles"], rxn])
+            subtree_deepest = depth
             for child_mol in rxn.get("children") or []:
-                walk(child_mol, depth + 1)
+                subtree_deepest = max(subtree_deepest, walk(child_mol, depth + 1))
+            found[idx][1] = subtree_deepest
+            deepest = max(deepest, subtree_deepest)
+        return deepest
 
     walk(route, 0)
     return found
@@ -51,11 +67,12 @@ def collect_reactions(route):
 def build_steps(route):
     """정반응 순서의 단계 리스트를 만든다."""
     found = collect_reactions(route)
-    # 깊이 내림차순 (깊은 반응이 먼저). 같은 깊이는 DFS 순서 유지 (stable sort).
-    found.sort(key=lambda t: -t[0])
+    # 깊이 내림차순 (깊은 반응이 먼저) → 같은 깊이면 서브트리가 깊은 쪽(주 사슬) 먼저
+    # → 그래도 같으면 DFS 순서.
+    found.sort(key=lambda t: (-t[0], -t[1], t[2]))
 
     steps = []
-    for i, (depth, product, rxn) in enumerate(found, start=1):
+    for i, (depth, _subtree_deepest, _idx, product, rxn) in enumerate(found, start=1):
         reactants = [c["smiles"] for c in (rxn.get("children") or [])]
         meta = rxn.get("metadata") or {}
         steps.append(

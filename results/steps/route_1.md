@@ -18,8 +18,8 @@
 | 4 | uspto | 0.008 | 0.0 Unrecognized | `C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21` |
 | 5 | uspto | 0.012 | 0.0 Unrecognized | `F[N+]12CC[N+](CCl)(CC1)CC2.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21` |
 | 6 | uspto | 0.010 | 0.0 Unrecognized | `Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21` |
-| 7 | uspto | 0.975 | 0.0 Unrecognized | `C=CC(=O)Cl.C[C@H]1CNCCN1>>C=CC(=O)N1CCN[C@@H](C)C1` |
-| 8 | uspto | 0.132 | 0.0 Unrecognized | `O=P(Cl)(Cl)Cl.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21` |
+| 7 | uspto | 0.132 | 0.0 Unrecognized | `O=P(Cl)(Cl)Cl.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21` |
+| 8 | uspto | 0.975 | 0.0 Unrecognized | `C=CC(=O)Cl.C[C@H]1CNCCN1>>C=CC(=O)N1CCN[C@@H](C)C1` |
 | 9 | uspto | 0.016 | 0.0 Unrecognized | `C=CC(=O)N1CCN[C@@H](C)C1.Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1` |
 | 10 | uspto | 0.002 | 0.0 Unrecognized | `CC1(C)OB(c2c(O)cccc2F)OC1(C)C.C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(-c4c(O)cccc4F)c(F)cc23)[C@@H](C)C1` |
 

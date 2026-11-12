@@ -16,10 +16,10 @@
 | 2 | ringbreaker | 0.036 | 0.0 Unrecognized | `CC(=O)Cl.C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21` |
 | 3 | uspto | 0.008 | 0.0 Unrecognized | `C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21` |
 | 4 | uspto | 0.012 | 0.0 Unrecognized | `F[N+]12CC[N+](CCl)(CC1)CC2.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21` |
-| 5 | uspto | 0.669 | 0.0 Unrecognized | `C[C@H]1CNCCN1Cc1ccccc1.O=C(OC(=O)C(F)(F)F)C(F)(F)F>>C[C@H]1CN(C(=O)C(F)(F)F)CCN1Cc1ccccc1` |
-| 6 | uspto | 0.010 | 0.0 Unrecognized | `Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21` |
-| 7 | uspto | 0.175 | 0.0 Unrecognized | `C[C@H]1CN(C(=O)C(F)(F)F)CCN1Cc1ccccc1>>C[C@H]1CN(C(=O)C(F)(F)F)CCN1` |
-| 8 | uspto | 0.132 | 0.0 Unrecognized | `O=P(Cl)(Cl)Cl.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21` |
+| 5 | uspto | 0.010 | 0.0 Unrecognized | `Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21` |
+| 6 | uspto | 0.669 | 0.0 Unrecognized | `C[C@H]1CNCCN1Cc1ccccc1.O=C(OC(=O)C(F)(F)F)C(F)(F)F>>C[C@H]1CN(C(=O)C(F)(F)F)CCN1Cc1ccccc1` |
+| 7 | uspto | 0.132 | 0.0 Unrecognized | `O=P(Cl)(Cl)Cl.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21` |
+| 8 | uspto | 0.175 | 0.0 Unrecognized | `C[C@H]1CN(C(=O)C(F)(F)F)CCN1Cc1ccccc1>>C[C@H]1CN(C(=O)C(F)(F)F)CCN1` |
 | 9 | uspto | 0.067 | 0.0 Unrecognized | `C[C@H]1CN(C(=O)C(F)(F)F)CCN1.Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCN(C(=O)C(F)(F)F)C[C@@H]2C)c2cc(F)c(Cl)nc21` |
 | 10 | uspto | 0.042 | 0.0 Unrecognized | `Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCN(C(=O)C(F)(F)F)C[C@@H]2C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCNC[C@@H]2C)c2cc(F)c(Cl)nc21` |
 | 11 | uspto | 0.255 | 0.0 Unrecognized | `C=CC(=O)O.Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCNC[C@@H]2C)c2cc(F)c(Cl)nc21>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1` |
