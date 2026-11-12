@@ -1,0 +1,234 @@
+{
+  "source": "sotorasib_trees_v4.json",
+  "route_number": 1,
+  "summary": {
+    "target": "C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(-c4c(O)cccc4F)c(F)cc23)[C@@H](C)C1",
+    "n_steps": 10,
+    "scores": {
+      "state score": 0.8447790869906586,
+      "number of reactions": 10,
+      "number of pre-cursors": 9,
+      "number of pre-cursors in stock": 8
+    },
+    "precursors": [
+      {
+        "smiles": "CC1(C)OB(c2c(O)cccc2F)OC1(C)C",
+        "in_stock": true
+      },
+      {
+        "smiles": "C=CC(=O)Cl",
+        "in_stock": true
+      },
+      {
+        "smiles": "C[C@H]1CNCCN1",
+        "in_stock": true
+      },
+      {
+        "smiles": "O=P(Cl)(Cl)Cl",
+        "in_stock": true
+      },
+      {
+        "smiles": "F[N+]12CC[N+](CCl)(CC1)CC2",
+        "in_stock": true
+      },
+      {
+        "smiles": "CC(=O)Cl",
+        "in_stock": true
+      },
+      {
+        "smiles": "C=C(C)B1OC(C)(C)C(C)(C)O1",
+        "in_stock": true
+      },
+      {
+        "smiles": "CN(C)C=O",
+        "in_stock": true
+      },
+      {
+        "smiles": "Cc1ccnc(Br)c1-n1c(N)cc(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O",
+        "in_stock": false
+      }
+    ],
+    "n_precursors": 9,
+    "n_precursors_in_stock": 8
+  },
+  "steps": [
+    {
+      "step": 1,
+      "retro_depth": 8,
+      "reaction_smiles": "CN(C)C=O.Cc1ccnc(Br)c1-n1c(N)cc(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O",
+      "reactants": [
+        "CN(C)C=O",
+        "Cc1ccnc(Br)c1-n1c(N)cc(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O"
+      ],
+      "product": "Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O",
+      "policy_name": "uspto",
+      "policy_probability": 0.3977000117301941,
+      "policy_probability_rank": 0,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "6c7780db8a9b2bf3cf0c21d6f9d2826515777bfbe8fd8113020726a3f7ffdacc",
+      "library_occurence": 256,
+      "mapped_reaction_smiles": "[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[Br:60])[c:24]([NH2:25])[c:38]1[CH:37]=[O:59]>>[CH:37](=[O:59])[N:61]([CH3:62])[CH3:63].[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[Br:60])[c:24]([NH2:25])[cH:38]1",
+      "retro_template": "[C:1](=[O:2])[c:5]([cH:4]:[NH:3])[cH2:6]>>CN(C)[C:1]=[O:2].[NH:3]:[cH:4][c:5][cH2:6]"
+    },
+    {
+      "step": 2,
+      "retro_depth": 7,
+      "reaction_smiles": "C=C(C)B1OC(C)(C)C(C)(C)O1.Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O",
+      "reactants": [
+        "C=C(C)B1OC(C)(C)C(C)(C)O1",
+        "Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O"
+      ],
+      "product": "C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O",
+      "policy_name": "uspto",
+      "policy_probability": 0.036400001496076584,
+      "policy_probability_rank": 4,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "b1c8d1427026dcf0e02cd4fa60e4808bc2d5ef5276c94fa83f1a26e9c01093b3",
+      "library_occurence": 150,
+      "mapped_reaction_smiles": "[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[C:21](=[CH2:22])[CH3:23])[c:24]([NH2:25])[c:38]1[CH:37]=[O:59]>>[C:21](=[CH2:22])([CH3:23])[B:26]1[O:27][C:28]([CH3:29])([CH3:30])[C:31]([CH3:32])([CH3:33])[O:34]1.[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[Br:60])[c:24]([NH2:25])[c:38]1[CH:37]=[O:59]",
+      "retro_template": "[c:1](:[NH:2])([cH2:3])[C:4](=[CH2:5])[CH3:6]>>Br[c:1](:[NH:2])[cH2:3].CC1(C)OB([C:4](=[CH2:5])[CH3:6])OC1(C)C"
+    },
+    {
+      "step": 3,
+      "retro_depth": 6,
+      "reaction_smiles": "CC(=O)Cl.C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21",
+      "reactants": [
+        "CC(=O)Cl",
+        "C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O"
+      ],
+      "product": "C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21",
+      "policy_name": "ringbreaker",
+      "policy_probability": 0.036400001496076584,
+      "policy_probability_rank": 7,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "3b98ecc6e82c6d4974ca209daa5036a34c839686dc3f2cbd3c8d39cffc4d4e9a",
+      "library_occurence": 77,
+      "mapped_reaction_smiles": "[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[C:21](=[CH2:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[cH:35][cH:37][c:38]12>>[C:26]([CH3:35])([Cl:42])=[O:43].[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[C:21](=[CH2:22])[CH3:23])[c:24]([NH2:25])[c:38]1[CH:37]=[O:59]",
+      "retro_template": "[cH:1]1[c:2][c:3][cH:4][cH:5][n:6]1>>O=[C:3][cH:4][cH:5][N:6].O=[CH:1][C:2]"
+    },
+    {
+      "step": 4,
+      "retro_depth": 5,
+      "reaction_smiles": "C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21",
+      "reactants": [
+        "C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21"
+      ],
+      "product": "Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21",
+      "policy_name": "uspto",
+      "policy_probability": 0.00800000037997961,
+      "policy_probability_rank": 7,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "a5e9a3842eb3a665d5fa2c24786d210aa8517dc875755ef929767c37718975dc",
+      "library_occurence": 55,
+      "mapped_reaction_smiles": "[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[cH:35][cH:37][c:38]12>>[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[C:21](=[CH2:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[cH:35][cH:37][c:38]12",
+      "retro_template": "[NH:1]:[cH:2][C:3]([CH3:4])[C:5]>>[NH:1]:[cH:2][C:3]([CH3:4])=[C:5]"
+    },
+    {
+      "step": 5,
+      "retro_depth": 4,
+      "reaction_smiles": "F[N+]12CC[N+](CCl)(CC1)CC2.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21",
+      "reactants": [
+        "F[N+]12CC[N+](CCl)(CC1)CC2",
+        "Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21"
+      ],
+      "product": "Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21",
+      "policy_name": "uspto",
+      "policy_probability": 0.011800000444054604,
+      "policy_probability_rank": 9,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "e56ce3b56b6df05a0004b5bf0edcde1fc0949c87cb3d29f709bf0315e6153bba",
+      "library_occurence": 113,
+      "mapped_reaction_smiles": "[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]12>>[F:36][N+:39]12[CH2:40][CH2:41][N+:43]([CH2:44][Cl:45])([CH2:46][CH2:47]1)[CH2:59][CH2:60]2.[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[cH:35][cH:37][c:38]12",
+      "retro_template": "[F:1][c:4]([cH:3]:[NH:2])[cH2:5]>>ClC[N+]12CC[N+]([F:1])(CC1)CC2.[NH:2]:[cH:3][c:4][cH2:5]"
+    },
+    {
+      "step": 6,
+      "retro_depth": 3,
+      "reaction_smiles": "Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21",
+      "reactants": [
+        "Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21"
+      ],
+      "product": "Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21",
+      "policy_name": "uspto",
+      "policy_probability": 0.00989999994635582,
+      "policy_probability_rank": 9,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "c0f453bd3e67f9bf15416e9eb9103dc3c518c26960d5e0bf60b70496ccf0a465",
+      "library_occurence": 175,
+      "mapped_reaction_smiles": "[c:9]1([OH:48])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]12>>[c:9]1([O:48][Si:49]([CH:50]([CH3:51])[CH3:52])([CH:53]([CH3:54])[CH3:55])[CH:56]([CH3:57])[CH3:58])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]12",
+      "retro_template": "[O:1][cH3:2]>>CC(C)[Si](C(C)C)(C(C)C)[O:1][cH3:2]"
+    },
+    {
+      "step": 7,
+      "retro_depth": 2,
+      "reaction_smiles": "C=CC(=O)Cl.C[C@H]1CNCCN1>>C=CC(=O)N1CCN[C@@H](C)C1",
+      "reactants": [
+        "C=CC(=O)Cl",
+        "C[C@H]1CNCCN1"
+      ],
+      "product": "C=CC(=O)N1CCN[C@@H](C)C1",
+      "policy_name": "uspto",
+      "policy_probability": 0.9745000004768372,
+      "policy_probability_rank": 0,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "dca0fa45e659cdea63b0cb8e84add5f4f7361f4ed27bd2d557c591ae66721ee9",
+      "library_occurence": 485,
+      "mapped_reaction_smiles": "[CH2:1]=[CH:2][C:3](=[O:4])[N:5]1[CH2:6][CH2:7][NH:8][C@@H:39]([CH3:40])[CH2:41]1>>[CH2:1]=[CH:2][C:3](=[O:4])[Cl:9].[NH:5]1[CH2:6][CH2:7][NH:8][C@@H:39]([CH3:40])[CH2:41]1",
+      "retro_template": "[C:1](=[O:2])([CH:3]=[CH2:4])[N:6]([CH3:5])[CH3:7]>>Cl[C:1](=[O:2])[CH:3]=[CH2:4].[CH3:5][N:6][CH3:7]"
+    },
+    {
+      "step": 8,
+      "retro_depth": 2,
+      "reaction_smiles": "O=P(Cl)(Cl)Cl.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21",
+      "reactants": [
+        "O=P(Cl)(Cl)Cl",
+        "Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21"
+      ],
+      "product": "Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21",
+      "policy_name": "uspto",
+      "policy_probability": 0.13199999928474426,
+      "policy_probability_rank": 0,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "fab2a5cac80411156040c2a25d351e2ced1dd27856f187b3247a15d27e02ec20",
+      "library_occurence": 826,
+      "mapped_reaction_smiles": "[c:9]1([Cl:43])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]12>>[Cl:43][P:44]([Cl:45])([Cl:46])=[O:47].[c:9]1([OH:48])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]12",
+      "retro_template": "[Cl:1][c:2]1:[N:3]:[cH:4]:[N:5]:[cH:6][cH:7]1>>O=P(Cl)(Cl)[Cl:1].O[c:2]1:[N:3]:[cH:4]:[N:5]:[cH:6][cH:7]1"
+    },
+    {
+      "step": 9,
+      "retro_depth": 1,
+      "reaction_smiles": "C=CC(=O)N1CCN[C@@H](C)C1.Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1",
+      "reactants": [
+        "C=CC(=O)N1CCN[C@@H](C)C1",
+        "Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21"
+      ],
+      "product": "C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1",
+      "policy_name": "uspto",
+      "policy_probability": 0.01640000008046627,
+      "policy_probability_rank": 8,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "b25ed710649e217aee52ef5d6f4a1fe923ba0425b693d01b7c9a600957b8a962",
+      "library_occurence": 5810,
+      "mapped_reaction_smiles": "[CH2:1]=[CH:2][C:3](=[O:4])[N:5]1[CH2:6][CH2:7][N:8]([c:9]2[n:10][c:11](=[O:12])[n:13](-[c:14]3[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]3[CH:21]([CH3:22])[CH3:23])[c:24]3[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]23)[C@@H:39]([CH3:40])[CH2:41]1>>[CH2:1]=[CH:2][C:3](=[O:4])[N:5]1[CH2:6][CH2:7][NH:8][C@@H:39]([CH3:40])[CH2:41]1.[c:9]1([Cl:43])[n:10][c:11](=[O:12])[n:13](-[c:14]2[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]2[CH:21]([CH3:22])[CH3:23])[c:24]2[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]12",
+      "retro_template": "[c:1](:[NH:2])([cH2:3])[N:5]([CH3:4])[CH3:6]>>Cl[c:1](:[NH:2])[cH2:3].[CH3:4][N:5][CH3:6]"
+    },
+    {
+      "step": 10,
+      "retro_depth": 0,
+      "reaction_smiles": "CC1(C)OB(c2c(O)cccc2F)OC1(C)C.C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(-c4c(O)cccc4F)c(F)cc23)[C@@H](C)C1",
+      "reactants": [
+        "CC1(C)OB(c2c(O)cccc2F)OC1(C)C",
+        "C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1"
+      ],
+      "product": "C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(-c4c(O)cccc4F)c(F)cc23)[C@@H](C)C1",
+      "policy_name": "uspto",
+      "policy_probability": 0.0017000000225380063,
+      "policy_probability_rank": 10,
+      "classification": "0.0 Unrecognized",
+      "template_hash": "2e54935a0f298c301963a0ae70748fdd56cde0b3f5c883f46f159a8d68576634",
+      "library_occurence": 522,
+      "mapped_reaction_smiles": "[CH2:1]=[CH:2][C:3](=[O:4])[N:5]1[CH2:6][CH2:7][N:8]([c:9]2[n:10][c:11](=[O:12])[n:13](-[c:14]3[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]3[CH:21]([CH3:22])[CH3:23])[c:24]3[n:25][c:26](-[c:27]4[c:28]([OH:29])[cH:30][cH:31][cH:32][c:33]4[F:34])[c:35]([F:36])[cH:37][c:38]23)[C@@H:39]([CH3:40])[CH2:41]1>>[CH2:1]=[CH:2][C:3](=[O:4])[N:5]1[CH2:6][CH2:7][N:8]([c:9]2[n:10][c:11](=[O:12])[n:13](-[c:14]3[c:15]([CH3:16])[cH:17][cH:18][n:19][c:20]3[CH:21]([CH3:22])[CH3:23])[c:24]3[n:25][c:26]([Cl:42])[c:35]([F:36])[cH:37][c:38]23)[C@@H:39]([CH3:40])[CH2:41]1.[c:27]1([B:43]2[O:44][C:45]([CH3:46])([CH3:47])[C:48]([CH3:49])([CH3:50])[O:51]2)[c:28]([OH:29])[cH:30][cH:31][cH:32][c:33]1[F:34]",
+      "retro_template": "[c:1]([cH2:2])([cH2:3])-[c:4](:[NH:5])[cH2:6]>>CC1(C)OB([c:1]([cH2:2])[cH2:3])OC1(C)C.Cl[c:4](:[NH:5])[cH2:6]"
+    }
+  ]
+}
