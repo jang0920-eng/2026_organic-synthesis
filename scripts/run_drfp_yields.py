@@ -15,6 +15,7 @@ Digital Discovery 2022, 1, 91. 반응 지문만 만들고 수율 모델은 포�
 
 import argparse
 import csv
+import gc
 import json
 import os
 import pathlib
@@ -112,7 +113,12 @@ def main():
         rmses.append(rmse)
 
         all_preds.append(np.clip(model.predict(target_fps), 0, 1) * 100)
-        print(f"  split {i}: 홀드아웃 R²={r2:.3f}, RMSE={rmse:.1f}%p")
+        print(f"  split {i}: 홀드아웃 R²={r2:.3f}, RMSE={rmse:.1f}%p", flush=True)
+
+        # 메모리가 적은 노트북에서는 split마다 바로 반납해야 한다.
+        # 지문 배열(4032 x 2048 float32)과 학습된 트리가 쌓이면 수 GB가 된다.
+        del model, fps, X_tr, X_te, y_tr, y_te, df
+        gc.collect()
 
     if not all_preds:
         sys.exit("학습 데이터를 찾지 못했다.")

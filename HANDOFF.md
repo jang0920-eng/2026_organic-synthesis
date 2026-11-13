@@ -96,8 +96,8 @@ C[C@H]1CN(CCN1C2=NC(=O)N(C3=NC(=C(C=C32)F)C4=C(C=CC=C4F)O)C5=C(C=CN=C5C(C)C)C)C(
 - [x] 11/9(월): Parrot 설치·실행 완료 (촉매·용매·시약. 온도는 Reaxys 라이선스 때문에 불가 → ASKCOS로 채움)
 - [x] 11/10(화): ASKCOS context recommender — **Docker 없이 성공**, 22개 반응 예측 완료 (온도 포함)
 - [x] 11/11(수): rxn\_yields 설치·실행 완료 (Suzuki HTE 모델 10 split 앙상블, 역표준화 보정 포함)
-- [ ] 11/12(목): DRFP 기반 수율 예측 (rxn\_yields와 비교용)
-- [ ] 11/13(금): 전체를 run\_pipeline.py 하나로 연결하고 결과를 json 하나로 모으기
+- [x] 11/12(목): DRFP + XGBoost 수율 예측 완료 (홀드아웃 R²=0.845, Yield-BERT와 비교)
+- [x] 11/13(금): `scripts/run_pipeline.py` 완성. 8단계를 한 번에 실행하고 `results/pipeline/sotorasib_pipeline.json` 하나로 통합. drfp 제외 전 구간 약 4분, 재실행 결과가 바이트 단위로 동일
 
 * 11/14(토): 예비일
 
@@ -137,8 +137,8 @@ C[C@H]1CN(CCN1C2=NC(=O)N(C3=NC(=C(C=C32)F)C4=C(C=CC=C4F)O)C5=C(C=CN=C5C(C)C)C)C(
 
 ### 마일스톤과 막혔을 때 대처
 
-- [ ] 11/7: 물질 확정, AiZynthFinder 경로 결과 확보
-- [ ] 11/14: 파이프라인 한 번에 실행
+- [x] 11/7: 물질 확정, AiZynthFinder 경로 결과 확보
+- [x] 11/14: 파이프라인 한 번에 실행 — **11/13에 달성** (`scripts/run_pipeline.py`)
 - [ ] 11/19: 보고서 v1 + 스킬 GitHub push
 - [ ] 12/3: 추가점수 1개 이상
 - [ ] 12/12: 제출
