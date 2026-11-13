@@ -41,7 +41,12 @@ for _stream in (sys.stdout, sys.stderr):
     except (AttributeError, OSError):
         pass
 
-DEFAULT_REPO = r"C:\Users\happi\github\askcos-context-src"
+#  기본값은 이 repo와 같은 폴더에 나란히 받은 askcos-context-src다.
+#  다른 곳에 받았으면 환경변수 ASKCOS_REPO 또는 --repo로 알려준다.
+DEFAULT_REPO = os.environ.get(
+    "ASKCOS_REPO",
+    str(pathlib.Path(__file__).resolve().parent.parent.parent / "askcos-context-src"),
+)
 
 # 용매 SMILES → (이름, 1기압 끓는점 °C). 끓는점은 보고서의 조건 검증에 쓴다.
 SOLVENTS = {
@@ -117,9 +122,25 @@ def main():
 
     project = os.getcwd()
 
+    repo = pathlib.Path(args.repo)
+    if not (repo / "app" / "v1" / "services" / "predictor.py").exists():
+        sys.exit(
+            f"ASKCOS 소스를 찾지 못했다: {repo}\n"
+            "  git clone https://gitlab.com/mlpds_mit/askcosv2/context_recommender.git "
+            "askcos-context-src\n"
+            "  로 받은 뒤, 다른 위치라면 --repo 또는 환경변수 ASKCOS_REPO로 알려준다.\n"
+            "  자세한 절차는 SKILL.md 3절을 본다."
+        )
+    weights = repo / "app/resources/models/context/v1/weights.h5"
+    if not weights.exists():
+        sys.exit(
+            f"모델 가중치가 없다: {weights}\n"
+            "  SKILL.md 3절의 gdown/curl 명령으로 v1.tar.gz를 받아 푼다."
+        )
+
     # 설정이 app/resources 상대경로를 쓰므로 repo 안에서 실행해야 한다
-    sys.path.insert(0, args.repo)
-    os.chdir(args.repo)
+    sys.path.insert(0, str(repo))
+    os.chdir(repo)
     from app.v1.services.predictor import NeuralNetContextRecommender
 
     print("모델 로드 중...")

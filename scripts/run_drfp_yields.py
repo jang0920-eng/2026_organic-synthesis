@@ -31,7 +31,12 @@ for _stream in (sys.stdout, sys.stderr):
     except (AttributeError, OSError):
         pass
 
-DEFAULT_REPO = r"C:\Users\happi\github\rxn-yields-src"
+#  기본값은 이 repo와 같은 폴더에 나란히 받은 rxn-yields-src다.
+#  다른 곳에 받았으면 환경변수 RXN_YIELDS_REPO 또는 --repo로 알려준다.
+DEFAULT_REPO = os.environ.get(
+    "RXN_YIELDS_REPO",
+    str(pathlib.Path(__file__).resolve().parent.parent.parent / "rxn-yields-src"),
+)
 TRAIN_ROWS = 4032  # Yield-BERT와 동일한 학습 구간
 
 

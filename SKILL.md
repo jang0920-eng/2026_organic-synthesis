@@ -151,7 +151,13 @@ Windows에서 반드시 필요한 조치 네 가지다.
 | `pyarrow==12.0.1` 고정 | `datasets 2.13.2`가 최신 pyarrow에서 삭제된 `PyExtensionType`을 참조한다 |
 | `rxnfp`는 `--no-deps` | rxnfp가 Windows wheel이 없는 옛 버전을 하드 핀한다. 실제로 쓰는 `rxnfp.models`의 의존성은 이미 설치되어 있다 |
 
-`inference.py`는 한 곳을 고쳐야 한다. `pandarallel`의 `parallel_apply`가 Windows에서 `NameError`로 죽는다 (fork가 없어 워커가 spawn으로 뜨고 자식이 모듈 전역 함수를 찾지 못한다). Windows에서는 단일 프로세스 `apply`를 쓴다.
+`inference.py`는 한 곳을 고쳐야 한다. `pandarallel`의 `parallel_apply`가 Windows에서 `NameError`로 죽는다 (fork가 없어 워커가 spawn으로 뜨고 자식이 모듈 전역 함수를 찾지 못한다). Windows에서는 단일 프로세스 `apply`를 쓴다. 아래 스크립트가 적용한다.
+
+```powershell
+python scripts/patch_parrot.py
+```
+
+여러 번 실행해도 안전하고, 원본은 `inference.py.orig`로 백업된다. Parrot 클론이 이 repo와 같은 폴더에 없으면 `--repo` 또는 환경변수 `PARROT_REPO`로 알려준다.
 
 모델·데이터는 추론에 필요한 두 개만 받는다.
 

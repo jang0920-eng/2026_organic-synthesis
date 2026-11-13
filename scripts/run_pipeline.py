@@ -50,7 +50,11 @@ ENVS = {
     "parrot": HOME / "miniconda3/envs/parrot-env/python.exe",
     "askcos": HOME / "miniconda3/envs/askcos-env/python.exe",
 }
-PARROT_SRC = HOME / "github/parrot-src"
+#  기본값은 이 repo와 같은 폴더에 나란히 받은 parrot-src다.
+PARROT_SRC = pathlib.Path(os.environ.get(
+    "PARROT_REPO",
+    str(pathlib.Path(__file__).resolve().parent.parent.parent / "parrot-src"),
+))
 
 TREES = "results/sotorasib_trees_v4.json"
 ROUTES = [1, 6]
