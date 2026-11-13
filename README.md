@@ -18,7 +18,7 @@ C[C@H]1CN(CCN1C2=NC(=O)N(C3=NC(=C(C=C32)F)C4=C(C=CC=C4F)O)C5=C(C=CN=C5C(C)C)C)C(
 
 이 물질을 고른 이유는 상용 공정 논문(*Org. Process Res. Dev.* **2022**)에 단계별 수율과
 반응 조건이 숫자로 공개되어 있어, 세 가지 예측을 모두 같은 분자에 대해 실측값과
-정량 비교할 수 있기 때문이다. 자세한 근거는 `HANDOFF.md` 1장에 있다.
+정량 비교할 수 있기 때문이다. 자세한 근거는 `docs/analysis.md` 1장에 있다.
 
 ## 사용한 예측 모델
 
@@ -48,8 +48,7 @@ C[C@H]1CN(CCN1C2=NC(=O)N(C3=NC(=C(C=C32)F)C4=C(C=CC=C4F)O)C5=C(C=CN=C5C(C)C)C)C(
 
 | 경로 | 내용 |
 |---|---|
-| `CLAUDE.md` | 작업 환경과 주의사항 요약 |
-| `HANDOFF.md` | 전체 맥락 — 선정 근거, 일정, 실행 결과, 문헌 비교, 한계점 |
+| `docs/analysis.md` | 분석 자료 — 선정 근거, 실행 결과, 경로 분석, 문헌 비교, 한계점 |
 | `SKILL.md` | 스킬 정의 — 모델 설치·실행 절차, 보고서 목차, 화학적 검증 규칙 |
 | `scripts/` | 실행 스크립트 |
 | `results/steps/` | 단계별 반응 SMILES (조건·수율 모델의 입력) |
@@ -113,9 +112,3 @@ python scripts/run_pipeline.py
 
 단계를 골라 돌리려면 `--only` 또는 `--skip`을 쓴다.
 **RAM이 8GB 이하면 `--splits 5` 정도로 줄인다** (DRFP 단계가 XGBoost를 10번 학습한다).
-
-진행 상황은 아래로 확인한다.
-
-```powershell
-python scripts/status.py
-```

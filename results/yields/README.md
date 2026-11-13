@@ -49,7 +49,7 @@ Windows에서 고쳐야 했던 두 가지다.
 
 ## 4. 실제 공정 수율과의 비교
 
-`HANDOFF.md` 6장의 Amgen 공정 수율이 ground truth다.
+`docs/analysis.md` 4장의 Amgen 공정 수율이 ground truth다.
 
 | 반응 | 실제 수율 | 모델 예측 | 차이 |
 | --- | --- | --- | --- |

@@ -17,7 +17,7 @@
 database_fname: Reaxys_total_syn_condition.csv     # The license of Reaxys is required. It will not be shared here!
 ```
 
-데이터도 학습된 가중치도 배포되지 않는다. 따라서 일정표의 "용매·시약·촉매·온도" 중
+데이터도 학습된 가중치도 배포되지 않는다. 따라서 보고서가 요구하는 "용매·시약·촉매·온도" 중
 **온도는 Parrot으로 채울 수 없다.**
 
 그 결과 `SKILL.md` 7.1절의 검증 규칙 "예측 온도가 용매 끓는점보다 높으면 그 조건은 쓸 수 없다"를
@@ -117,7 +117,7 @@ python scripts/summarize_parrot.py --route 1 6
 
 ## 5. 문헌 공정과의 비교 (route 1 top-1)
 
-실제 Amgen 공정 조건은 `HANDOFF.md` 6장 표가 ground truth다.
+실제 Amgen 공정 조건은 `docs/analysis.md` 4장 표가 ground truth다.
 
 | 단계 | 반응 | AI 예측 (top-1) | 실제 공정 | 판정 |
 | --- | --- | --- | --- | --- |

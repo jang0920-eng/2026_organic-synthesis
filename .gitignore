@@ -24,3 +24,9 @@ env/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# 내부 작업 메모 (과제 제출물이 아니므로 repo에 올리지 않는다)
+# 분석 내용은 docs/analysis.md로 공개한다
+HANDOFF.md
+CLAUDE.md
+scripts/status.py

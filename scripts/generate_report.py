@@ -2,7 +2,7 @@
 
 설계 원칙
     **생성된 보고서를 직접 고치지 않는다.** 어색한 부분이 있으면 이 파일의 프롬프트를
-    고치고 해당 장만 다시 생성한다 (일정표 11/18 규칙). 그래야 스킬이 다른 분자에도
+    고치고 해당 장만 다시 생성한다. 그래야 스킬이 다른 분자에도
     그대로 동작한다.
 
     장을 따로 생성하는 이유는 두 가지다.
@@ -51,9 +51,12 @@ def read(path):
     return p.read_text(encoding="utf-8") if p.exists() else ""
 
 
-def handoff_section(num):
-    """HANDOFF.md에서 `## <num>. ...` 장을 통째로 꺼낸다."""
-    text = read("HANDOFF.md")
+def analysis_section(num):
+    """docs/analysis.md에서 `## <num>. ...` 장을 통째로 꺼낸다.
+
+    1 선정 근거 / 2 실행 결과 / 3 경로 상세 / 4 문헌 비교 / 5 한계점
+    """
+    text = read("docs/analysis.md")
     m = re.search(rf"^## {num}\. .*?(?=^## \d+\. |\Z)", text, re.M | re.S)
     return m.group(0).strip() if m else ""
 
@@ -143,10 +146,10 @@ def build_chapters(bundle):
     yield_digest = "\n\n".join(
         digest_yields(bundle, k) for k in bundle["routes"]
     )
-    literature = handoff_section(6)
-    limits = handoff_section(7)
-    selection = handoff_section(1)
-    run_results = handoff_section(4)
+    literature = analysis_section(4)
+    limits = analysis_section(5)
+    selection = analysis_section(1)
+    run_results = analysis_section(2)
 
     return [
         {

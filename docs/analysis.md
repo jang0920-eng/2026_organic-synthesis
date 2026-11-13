@@ -1,41 +1,12 @@
-# 유기합성학 기말 프로젝트 — 전체 인수인계 (CLI 작업용)
+# 소토라십 합성 예측 — 분석 자료
 
-생성 2026-11-13 · 출처: Claude 프로젝트 "유기합성학" 세션 5개 + 프로젝트 문서 4개
-이 파일 하나만 읽으면 지금까지의 모든 결정·결과·남은 일을 알 수 있다.
+보고서의 근거 자료다. 실행 결과, 문헌 공정과의 대조, 모델의 한계를 정리했다.
+작업 절차와 검증 규칙은 `SKILL.md`, 통합 결과는 `results/pipeline/`에 있다.
 
----
-
-## 0. 한눈에 보기
-
-| 항목 | 값 |
-| --- | --- |
-| 과제 | AI 신약 유기합성 기말 프로젝트 (유기합성학) |
-| 대상 물질 | **소토라십 (Sotorasib, AMG 510)** / 백업: 오시머티닙 |
-| 마감 | 12/12 제출 (12/13 예비일) |
-| 진행 | 1주차(11/1–11/7) 분량 **전부 완료**, 2주차(11/8~) 미착수 |
-| repo | https://github.com/jang0920-eng/2026_organic-synthesis |
-| 일정표 | https://claude.ai/artifact/XconMnEYdZuDZcmfVgH3Sy |
-| 보고서 생성 | Solar Pro 4 (Upstage Console API, 모델명 `solar-pro4`) |
-
-**SMILES** (PubChem CID 137278711, (S)-이성질체, C30H30F2N6O3 확인됨)
-
-```
-C[C@H]1CN(CCN1C2=NC(=O)N(C3=NC(=C(C=C32)F)C4=C(C=CC=C4F)O)C5=C(C=CN=C5C(C)C)C)C(=O)C=C
-```
-
-**작업 환경**: Windows 노트북(사용자명 happi), PowerShell, miniconda3
-**conda 환경**: `aizynth-env` (Python 3.11.15)
-**고정 버전**: `aizynthfinder==4.4.1`, `pyarrow==17.0.0`, `onnxruntime==1.19.2`
-**API 키**: `UPSTAGE_API_KEY` 환경변수에 설정 완료 (repo에 넣지 않음)
-
-**주요 경로**
-- 모델·데이터: `C:\Users\happi\github\aizynth-data`
-- 소토라십 작업 폴더: `C:\Users\happi\github\aizynth-sotorasib`
-- repo 로컬 클론: `C:\Users\happi\github\2026_organic-synthesis`
 
 ---
 
-## 1. 물질 선정 근거 (11/1 확정)
+## 1. 물질 선정 근거
 
 후보 3개를 놓고 실제 합성 논문 존재 여부로 비교했다.
 
@@ -45,161 +16,17 @@ C[C@H]1CN(CCN1C2=NC(=O)N(C3=NC(=C(C=C32)F)C4=C(C=CC=C4F)O)C5=C(C=CN=C5C(C)C)C)C(
 | **소토라십 (AMG 510)** | **OPRD 2022 (Amgen 상용 공정)** | SNAr + **Pd 커플링** + 우레아 고리화 + 아마이드 커플링 | **확정** |
 | 니르마트렐비르 | Pfizer 5단계 62% 외 다수 | 펩타이드 커플링 중심 | 키랄 센터 3개 → AiZynthFinder가 입체화학을 못 다뤄 비교 불가 구간 과다 |
 
-**선정 이유 3줄 메모** (보고서 "선택한 물질" 절에 그대로 쓸 수 있는 형태)
+**선정 이유**
 
 > 1. 소토라십은 상업 공정 논문(OPRD 2022)에 단계별 수율과 반응 조건이 숫자로 공개되어 있어, 합성경로·합성조건·산출율 세 가지 AI 예측을 모두 동일한 분자에 대해 실측값과 정량 비교할 수 있다.
 > 2. 주요 변환이 SNAr·Pd 촉매 커플링·우레아 고리화로 구성되어 있어, HTE 커플링 데이터로 학습된 산출율 모델(rxn_yields)과 조건 추천 모델(context_recommender, Parrot)의 학습 도메인에 들어오고, 따라서 예측값의 신뢰 구간을 논의할 수 있다.
 > 3. 아트로프아이소머라는 입체 특성 때문에 실제 공정에서는 키랄 분할이 필수였으나 역합성 AI는 이 축부등성을 인식하지 못하므로, "AI 모델의 한계" 절과 MOPAC 회전 장벽 계산·3차원 구조 분석 기반의 추가 분석을 자연스럽게 연결할 수 있다.
 
-**배점상 유리한 점**: 추가점수 20점 항목 중 MOPAC 양자계산(C–N 축 회전 장벽 → 아트로프아이소머 분리 가능성)과 3차원 구조 분석(아크릴아마이드가 KRAS G12C 시스테인에 접근하는 기하)이 둘 다 이 분자에서 필연적인 분석이 된다.
 
-**교체 기준** (혹시 경로를 전혀 못 찾을 경우): 상위 5개 경로에 `is_solved = True`이고 `number_of_steps ≥ 3`인 경로가 하나도 없으면 오시머티닙으로 교체. → 실제로는 `is_solved: False`였지만 원인이 재고 정의 문제라 교체하지 않았다 (아래 3장 참조).
 
 ---
 
-## 2. 일정표 (11/1–12/13)
-
-원본: https://claude.ai/artifact/XconMnEYdZuDZcmfVgH3Sy (작성 2026-10-31)
-
-### 전체 전략
-
-목표는 11/19까지 Solar Pro4가 쓴 보고서 초안 v1을 완성하는 것이에요. 그 뒤는 다듬기와 추가점수만 남겨서 12월 시험 기간에 부담이 없게 했어요. 제출은 12/12로 잡고 12/13은 예비일로 남겨요.
-
-- 집중기(11/1–11/19): 주 5일, 하루 2–3시간
-- 여유기(11/20–12/13): 주 1–2회, 한 번에 1–2시간
-
-| 기간 | 강도 | 이 기간 끝에 있어야 할 것 |
-| --- | --- | --- |
-| 11/1–11/7 | 집중 | 물질 확정 + AiZynthFinder 경로 결과 |
-| 11/8–11/14 | 집중 | 경로 → 조건 → 수율이 한 번에 돌아가는 파이프라인 |
-| 11/15–11/19 | 집중 | SKILL.md + 보고서 초안 v1 |
-| 11/20–12/3 | 여유 | 모델 다양성 보강 + 추가점수 1개 |
-| 12/4–12/13 | 최소 | 재현성 점검 후 제출 |
-
-### 1주차 (11/1–11/7): 물질 선정과 경로 예측
-
-이번 주에는 물질을 확정하고, 그 물질로 AiZynthFinder 경로 결과를 얻는 것까지가 목표예요.
-
-- [x] 11/1(일): 후보 3개를 추려서 실제 합성 논문이 있는지 확인하고 1개 확정. 선정 이유를 3줄로 메모
-- [x] 11/2(월): conda 환경 만들기, GitHub repo 생성, Solar Pro4 접근 방법(API 키, 하네스) 확인, SKILL.md 뼈대 작성 (입력 형식, 보고서 목차, 모델 GitHub 링크 6개 — 실행 순서는 자리만 비워두기)
-- [x] 11/3(화): AiZynthFinder 설치, 공개 모델 다운로드, 예제 분자로 테스트 실행
-- [x] 11/4(수): 내 물질로 AiZynthFinder 실행, 상위 경로 3개를 json으로 저장. 사용한 명령어와 출력 형식을 SKILL.md에 기록
-- [x] 11/5(목): 예측 경로와 문헌 경로를 비교해서 맞은 점·틀린 점 메모 (나중에 ‘한계점’ 재료)
-
-* 11/6(금)–11/7(토): 휴식 또는 밀린 일 처리
-
-### 2주차 (11/8–11/14): 조건·수율 모델 연결
-
-이번 주 목표는 스크립트 하나로 경로 → 조건 → 수율이 한 번에 나오는 것이에요.
-
-- [x] 11/8(일): 단계별 반응 SMILES 추출 스크립트 완료 (scripts/extract_steps.py)
-- [x] 11/9(월): Parrot 설치·실행 완료 (촉매·용매·시약. 온도는 Reaxys 라이선스 때문에 불가 → ASKCOS로 채움)
-- [x] 11/10(화): ASKCOS context recommender — **Docker 없이 성공**, 22개 반응 예측 완료 (온도 포함)
-- [x] 11/11(수): rxn\_yields 설치·실행 완료 (Suzuki HTE 모델 10 split 앙상블, 역표준화 보정 포함)
-- [x] 11/12(목): DRFP + XGBoost 수율 예측 완료 (홀드아웃 R²=0.845, Yield-BERT와 비교)
-- [x] 11/13(금): `scripts/run_pipeline.py` 완성. 8단계를 한 번에 실행하고 `results/pipeline/sotorasib_pipeline.json` 하나로 통합. drfp 제외 전 구간 약 4분, 재실행 결과가 바이트 단위로 동일
-
-* 11/14(토): 예비일
-
-### 3주차 (11/15–11/19): 스킬과 보고서 초안
-
-집중기의 마지막 주예요. 11/19에 보고서 v1이 GitHub에 올라가 있으면 성공이에요.
-
-- [ ] 11/15(일): RDKit으로 분자 구조와 반응식 이미지를 자동 생성 (가독성 30점)
-- [ ] 11/16(월): SKILL.md 완성. 뼈대에서 비워뒀던 실행 순서를 정리하고 보고서 목차와 프롬프트 다듬기
-- [ ] 11/17(화): Solar Pro4로 첫 보고서 생성
-- [ ] 11/18(수): 어색한 문체·빠진 내용을 찾아 스킬 프롬프트를 고치고 다시 생성 (보고서를 직접 고치지 않기)
-- [ ] 11/19(목): 보고서 v1 확정, 스킬과 결과물을 GitHub에 push
-
-### 여유기 (11/20–12/13): 주 1–2회만
-
-뼈대는 이미 완성된 상태니까, 여기서는 한 번에 1–2시간씩 점수를 더하는 일만 해요. 한 주에 두 칼 이상 안 해도 돼요.
-
-**11/20–11/26 · 모델 다양성 보강 (2회)**
-
-- [ ] Synthex를 추가해서 경로 모델 2개의 결과 비교
-- [ ] 모델 결과를 종합한 ‘실험 결론’ 섹션 프롬프트 보강 후 보고서 재생성
-
-**11/27–12/3 · 추가점수 (2회)**
-
-- [ ] 1순위: 하네스 비교. 같은 스킬을 opencode와 pi에서 돌려서 결과 차이 정리
-- [ ] 여력이 되면: EPI Suite로 주요 중간체의 BP·MP를 구해서 상태 분석
-
-**12/4–12/10 · 재현성 점검 (1회)**
-
-- [ ] 새 환경에서 README만 보고 처음부터 실행해보기 (교수님이 하는 그대로)
-- [ ] 보고서에 ‘예측이 실패한 경우’가 들어가는지 확인
-
-**12/11–12/13 · 제출 (1회)**
-
-- [ ] 최종 보고서 생성, 20장 이하인지 확인, docx/pdf로 저장
-- [ ] 12/12 제출 (12/13은 예비일)
-
-### 마일스톤과 막혔을 때 대처
-
-- [x] 11/7: 물질 확정, AiZynthFinder 경로 결과 확보
-- [x] 11/14: 파이프라인 한 번에 실행 — **11/13에 달성** (`scripts/run_pipeline.py`)
-- [ ] 11/19: 보고서 v1 + 스킬 GitHub push
-- [ ] 12/3: 추가점수 1개 이상
-- [ ] 12/12: 제출
-
-막혔을 때는 이렇게 해요.
-
-- **설치가 하루 넘게 막히는 모델**은 실패 원인만 기록하고 넘어가요. 실패 사례도 ‘AI 모델의 한계점’에 쓸 재료예요. 가장 막히기 쉬운 건 ASKCOS와 Synthex예요.
-- **11/19를 못 맞추면** 11/20–11/26 칸을 밀리 일에 쓰고, 추가점수는 하네스 비교 하나만 해요.
-- **Solar Pro4 접근이 안 되면** 11/2에 바로 교수님이나 조교에게 문의해요. 재현성 20점이 여기에 달려 있어요.
-
----
-
-## 3. 진행 상황 (마지막 갱신 2026-11-05)
-
-### 완료한 일
-
-- [x] 11/1 물질 선정 (소토라십)
-- [x] 11/2 GitHub repo 생성
-- [x] 11/2 conda 환경 `aizynth-env` 생성 (Python 3.11.15)
-- [x] 11/2 Solar Pro 4 접근 방법 확인 + API 키 환경변수 설정
-- [x] 11/2 SKILL.md 뼈대 작성 후 repo 루트에 업로드 (11/5 완료) — 입력 형식, 모델 6개 표+GitHub 링크, AiZynthFinder 설치·실행·config 표, 보고서 목차 10장(필수 항목 표시), 작성 규칙. 나머지 모델 설치·실행은 TODO
-- [x] 11/3 AiZynthFinder 4.4.1 설치
-- [x] 11/3 공개 모델/데이터 다운로드 → `C:\Users\happi\github\aizynth-data`
-  - config.yml: expansion `uspto`, `ringbreaker` / filter `uspto` / stock `zinc` (1742만 화합물)
-- [x] 11/3 예제 분자 테스트 (11/5 완료)
-  - 아세트아미노펜 `CC(=O)Nc1ccc(O)cc1` → is solved: True, 1단계, 탐색 16.5초
-  - 경로: 4-아미노페놀 + 아세트산 무수물 → 아세트아미노펜 (addition–elimination 아마이드화), 출발물질 둘 다 ZINC 재고에 있음
-- [x] 11/4 소토라십 AiZynthFinder 실행 — 설정을 바꿔 4회 실행 완료 (11/5). **결과 수렴 확인, AiZynthFinder 작업 종료**
-- [x] v2·v3·v4 json 경로 분석 완료
-- [x] 11/5 문헌 경로 비교 완료
-
-### SKILL.md 현재 상태
-
-repo 루트에 있음. 들어간 내용: 입력 형식(물질명/SMILES, RDKit 파싱 확인), 모델 6개 표 + GitHub 링크, AiZynthFinder 설치·실행·config 표, 보고서 목차 10장(필수 항목 표시), 작성 규칙(한국어 평서문, 전문용어 표기 규칙), 경로 판정 기준(`is_solved`, `number_of_steps ≥ 3`), 7절 "화학적 검증 규칙"(아래 6장 내용, commit 959ac6e).
-TODO로 남은 것: 나머지 모델(Parrot, ASKCOS, rxn_yields, DRFP) 설치·실행 절차.
-
-**작성 규칙**: SKILL.md에는 에러·경고가 났던 과정은 적지 않는다. 최종 버전과 명령어만 적는다.
-
-### 실행 방법 메모
-
-- 새 PowerShell 창마다 `conda activate aizynth-env` 먼저 (기본값은 base)
-- 실행:
-  ```
-  aizynthcli --config "$env:USERPROFILE\github\aizynth-data\config.yml" --smiles "<SMILES>" --output <파일명>.json
-  ```
-  - SMILES 1개 입력 시: 통계는 터미널에, 상위 경로는 json에 저장 (기본 이름 `trees.json`)
-- expansion policy는 기본으로 **첫 번째 것(uspto)만** 선택됨. 둘 다 쓰려면 `--policy uspto ringbreaker`
-- `config.yml` 맨 아래 탐색 설정 (메모장 저장이 안 먹혀서 `Add-Content`로 입력):
-  ```yaml
-  search:
-    max_transforms: 10
-    iteration_limit: 500
-    time_limit: 10800
-  ```
-- 분자 하나짜리 실행은 중간 저장이 없다. 완전 종료하면 처음부터 다시 돌려야 한다
-
-**주의 — time_limit은 벽시계 시간**: AiZynthFinder는 `time.time()`으로 경과 시간을 재므로 **노트북 절전 시간도 time_limit에 포함된다.** 3차 실행이 312회에서 멈춘 원인이다. 끝까지 돌리려면 `powercfg /change standby-timeout-ac 0`으로 절전을 막고 돌리고, 끝나면 `powercfg /change standby-timeout-ac 30`으로 되돌린다.
-
----
-
-## 4. AiZynthFinder 실행 결과 (11/5, 4회)
+## 2. AiZynthFinder 실행 결과
 
 작업 폴더: `C:\Users\happi\github\aizynth-sotorasib`
 
@@ -266,7 +93,7 @@ ringbreaker를 넣으면 점수가 0.834 → 0.845로 오르고 경로가 깊어
 
 ---
 
-## 5. v4 경로 상세 분석
+## 3. 예측 경로 상세 분석
 
 원본 `sotorasib_trees_v3.json` (7개 경로), `sotorasib_trees_v4.json` (15개 경로)
 설정: `--policy uspto ringbreaker`, max_transforms 10, iteration_limit 500
@@ -376,7 +203,7 @@ Cc1ccnc(Br)c1-n1c(N)cc(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O
 
 ---
 
-## 6. 문헌 경로 비교 (실제 Amgen 공정과의 대조)
+## 4. 문헌 경로 비교 (실제 Amgen 공정과의 대조)
 
 ### 출처
 
@@ -485,7 +312,7 @@ OCc1ccccc1 + [카바모일 클로라이드 중간체] → Cbz 보호체       (p
 
 ---
 
-## 7. 보고서 '한계점' 절에 넣을 항목 (최종 정리)
+## 5. AI 모델의 한계점
 
 1. 아실 클로라이드 화학에서 염소는 이탈기다. 이 템플릿은 C–Cl 결합을 유지한 채 염소를 새로 만든 방향족 고리의 치환기로 남기고, 아세틸의 메틸 탄소를 고리 탄소로 바꾼다. 실제로 일어나지 않는 변환이다. 문헌 공정에서는 그 염소가 출발물질(2,6-다이클로로-5-플루오로니코틴산)에 처음부터 달려 있다. (v4 15개 경로 공통)
 
@@ -501,175 +328,3 @@ OCc1ccccc1 + [카바모일 클로라이드 중간체] → Cbz 보호체       (p
 7. `is_solved: False`의 원인은 재고 정의 (ZINC에 없는 중간체 1개)
 
 추가로, **핵심 단계의 확신도가 매우 낮다**: 최종 Suzuki 커플링 p=0.002, 피페라진 SNAr p=0.016, 환원 p=0.008. 확신이 높은 단계는 아크릴로일 클로라이드 + 피페라진 아마이드화(p=0.975) 하나뿐이다. 쉬운 반응만 자신 있게 맞히고, 분자 골격을 만드는 어려운 반응은 추측에 가깝다.
-
----
-
-## 8. 보고서 금지·주의 사항 (수업 자료 근거)
-
-교수님이 수업 자료에서 "아니다 / 안 된다 / 이것까지 뜻하지 않음"으로 명시한 내용. 보고서에 이 주장을 쓰면 감점 요인이고, AI 모델이 이렇게 예측했으면 한계점으로 적어야 한다. SKILL.md 7절 "화학적 검증 규칙"에 반영됨 (commit 959ac6e).
-
-### MOPAC 관련 (Week 4-2)
-
-- pKa 계산의 공식 적용 범위는 **O–H(산소에 붙은 이온화 가능 수소)뿐**이다. 다음은 적용 범위가 아니다: N–H 일반 이온화, 염기성 site protonation, 전체 ionization-state 예측, 실험적 진실
-- pKa 옵션은 **PM6에서만** 작동한다. PM6를 빼면 `Calculation abandoned`
-- geometry optimization에 COSMO를 넣지 않는다 (pKa 단계에서 MOPAC이 임시 사용)
-- `CHARGES` ≠ `CHARGE=n`. CHARGES는 CHARGE의 복수형이 아니다. CHARGES는 전하 부위 진단 후 종료, CHARGE=n은 계산계의 총전하 지정
-- 출력 파일(.out/.arc)을 직접 수정하는 것은 재계산이 아니다
-- `.out` 마지막에 `JOB ENDED NORMALLY`를 확인해야 결과로 쓸 수 있다
-- 계산 결과는 **추정값이고 실험적 진실이 아니다**. 숫자 옆에 '추정값'이라고 적는다
-
-### EPI Suite 관련 (Week 3)
-
-- ESTIMATED와 EXPERIMENTAL을 구분해서 기록한다 (에탄올 BP: 추정 65.11 °C vs 실험 78.20 °C)
-- 어느 모델로 계산했는지 **모델명까지 적는다**. 모델마다 값이 다르다 (물용해도: WSKOWWIN 8.58e+5 vs WATERNT 4.52e+5 mg/L, 실험값 1.00e+6)
-- 결합 극성 ≠ 분자 극성 (CO₂는 결합이 극성이지만 상쇄되어 무극성)
-
-### 반응 화학 — AI 예측이 틀리기 쉬운 지점 (후반 2주차)
-
-- sp² 탄소(브로모벤젠 등)와 고리 탄소에는 **SN2 뒤쪽 공격이 안 된다.** LUMO가 낮아도 안 된다. 이 C–N 결합은 Pd 촉매(Buchwald–Hartwig)로 만든다
-- 1° 탄소에서는 SN1이 일어나지 않는다 (양이온이 너무 불안정). 카보양이온 안정성 3° > 2° > 1° > 메틸
-- 카복실산 유도체는 반응성 **높음 → 낮음 방향으로만** 바꿀 수 있다. acid chloride → 아마이드는 쉽지만 역방향은 안 된다
-- 아민의 SN2 알킬화는 한 번에 멈추지 않는다 (overalkylation). N–H가 하나뿐일 때만 한 번에 끝난다
-- NaOH로는 에톡사이드를 다 만들 수 없다 (짝산 pKa 15.7 vs 16으로 비슷해서 반만 진행)
-- NaH·LiAlH₄는 물을 만나면 H₂를 내며 없어진다 → 무수 조건에서 쓴다
-- AI가 예측한 반응 온도가 **용매의 끓는점보다 낮아야** 실제로 가능한 조건이다. 열린 플라스크는 용매 끓는점보다 뜨거워지지 않는다
-- δ+는 실제 + 전하가 아니다. 부분전하와 형식전하는 다르다 (카보닐 C·O의 형식전하는 둘 다 0)
-- 계산값 하나로 판단하지 않는다. 3D 구조와 함께 본다
-- 같은 화학 반응이 경로에 따라 '목표 결합 만들기'일 수도, '보호(protection)'일 수도 있다
-
-### 명명법 (Week 5)
-
-- 치환기 위치를 잘못 잡은 이름은 틀린 이름이다 (예: 3-propylhexane → 모체 사슬 선택 오류)
-- 1°/2°/3° 구분은 단일·이중·삼중 결합 여부가 아니라 서로 다른 C 이웃의 개수로 센다
-
----
-
-## 9. 수업 자료 (11/5 업로드)
-
-추가점수 20점 항목(MOPAC 양자계산, EPI Suite BP·MP, Discovery Studio Visualizer 3차원 구조)은 모두 수업에서 다룬 도구다. 해당 주차 자료에 설치·실행 방법이 있다.
-
-| 주차 | 자료 | 내용 |
-| --- | --- | --- |
-| Week 1 | `organic_intro.pdf` | 유기화학 개론, 실습실 네트워크 환경 |
-| Week 1-2 | `molecular_structure.pdf`, `w1-2-molecular-structure.pptx` | Lewis 구조 → Discovery Studio Visualizer |
-| Week 1 (후반) | `01_작용기.pdf` | 작용기 구조와 이름, R·Ar 표기 |
-| Week 2 | `w2-1-codex-cli-setup_mopac.pdf` | Codex CLI로 MOPAC 설치·실행, 터미널 단축키 |
-| Week 3 | `w3-1_environmental_fate_epa_suite_exercise.pdf` | sp³/sp²/sp 혼성, 3D 구조, 극성, 분자간 힘, EPI Suite 환경 거동 실습 |
-| Week 3 | `w3.zip` | Jmol 스크립트 3개 (`methane_sp3.spt`, `ethene_sp2.spt`, `ethyne_sp.spt`) |
-| Week 4 | `week4-formal-charge-ds-mopac-concise.pdf` | 형식 전하 FC = V − N − B, PubChem → DS Visualizer, MOPAC CHARGES |
-| Week 4 | `week4-2-mopac-input-output-pka.pdf` | MOPAC `.mop`/`.out`/`.arc`, pKa, PM6 요구사항 |
-| Week 5 | `week5-alkanes-cycloalkanes-naming.pdf` | 알케인·사이클로알케인 IUPAC 명명법 |
-| 후반 2주차 | `02_반응과_전자이동_v2.pdf` | 반응과 전자 이동 (프로프라놀롤 5단계), SN1/SN2/제거, 카복실산 유도체 |
-| 실습 | `MOPAC_Water_Orbitals_Colab.ipynb` | MOPAC로 물 분자 오비탈 계산 (Colab) |
-
-**강의자료 참고 범위**: 보고서에 강의자료 출처는 적지 않는다. 용어, 프로그램, 메커니즘만 강의자료를 참고한다.
-- 용어: 친핵체/친전자체, 짝산·짝염기, 이탈기, naked anion, 사면체 중간체 등 강의 표기 그대로
-- 프로그램: AiZynthFinder·SynthEx·ASKCOS·Parrot·Yield-BERT·DRFP, MOPAC·Discovery Studio Visualizer·EPI Suite
-- 메커니즘: SN2/SN1/E2, hydride 환원, addition–elimination, Fischer 에스터화, 에폭사이드 개환, Buchwald–Hartwig
-
----
-
-## 10. 남은 일 (우선순위 순)
-
-### 즉시
-
-- [ ] **SKILL.md 보강**: 소토라십 실행 명령어, trees.json 출력 형식, 4회 실행 비교
-- [ ] **결과 json 4개를 repo `results/`에 올리기** (재현성 20점)
-- [ ] **경로 구조 이미지 생성 (RDKit)** — 원래 11/15 일정, 가독성 30점
-
-### 2주차 (11/8~) — 미착수
-
-- [ ] 11/8: 예측 경로에서 단계별 반응 SMILES를 뽑는 스크립트 작성
-  - **입력으로 쓸 단계**: v4 route 1(점수 최고)과 route 6(화학적으로 가장 정합적)
-- [ ] 11/9: Parrot 설치 후 단계별 반응 조건(용매·시약·촉매·온도) 예측
-- [x] 11/10: ASKCOS context recommender — Docker 없이 성공 (온도 예측 확보)
-- [ ] 11/11: rxn_yields 설치 후 단계별 수율 예측
-- [ ] 11/12: DRFP 기반 수율 예측 (rxn_yields와 비교용)
-- [ ] 11/13: 전체를 `run_pipeline.py` 하나로 연결하고 결과를 json 하나로 모으기
-
-### 3주차 이후는 2장 일정표 참조
-
----
-
-## 11. 세션 이력
-
-| 날짜 | 세션 | 한 일 |
-| --- | --- | --- |
-| 10/30 | 주차별 계획 | 11/1–12/13 일정표 작성 (Claude Docs 아티팩트), 수업 자료 12개 업로드, 금지·주의 사항 추출 → SKILL.md 7절 "화학적 검증 규칙" 작성·push (commit 959ac6e) |
-| 10/31 | 11/1 일정 및 합성 논문 확인 | 후보 3개 문헌 확인 → 소토라십 확정, 선정 이유 3줄 메모, 일정표에 SKILL.md 기록 항목 추가 |
-| 11/1 | 강의자료 출처 표기 제외 | 후반 2주차 슬라이드 100장 분석, 강의자료 참고 범위를 용어·프로그램·메커니즘으로 한정 |
-| 11/2–11/4 | 11/2 계획 | conda 환경, AiZynthFinder 설치, 모델 다운로드, repo 뼈대 커밋, Upstage API 키 설정. pyarrow/NumPy·onnxruntime DLL 충돌을 버전 고정으로 해결 |
-| 11/4–11/5 | 11/4까지 할 일 확인 | 소토라십 4회 실행, 결과 수렴 확인, v2·v3·v4 json 분석, 문헌 경로 비교. GitHub push 권한 연결 |
-
-**작업 방식 메모**
-- SKILL.md에는 에러·경고 과정을 적지 않는다. 최종 버전과 명령어만
-- 프로젝트 문서는 전체를 덮어쓰는 방식으로 갱신 (부분 수정 없음)
-- 노트북에서 생성된 결과 파일은 사용자가 직접 붙이거나 첨부해야 함
-
----
-
-## 12. CLI로 넘어갈 때
-
-**전제: CLI는 노트북(Windows, 사용자명 happi)에서 돌린다.** 따라서 아래 파일들을 CLI가 직접 읽을 수 있다.
-
-| 필요한 것 | 위치 |
-| --- | --- |
-| repo 로컬 클론 | `C:\Users\happi\github\2026_organic-synthesis` |
-| 결과 json 4개 | `C:\Users\happi\github\aizynth-sotorasib\sotorasib_trees*.json` |
-| 모델·재고·config | `C:\Users\happi\github\aizynth-data` |
-| 수업 자료 12개 | 노트북 어딘가 (다운로드 폴더 등) — 추가점수 작업 때 필요 |
-| Solar Pro 4 API 키 | `UPSTAGE_API_KEY` 환경변수 (이미 설정됨) |
-
-**이 파일은 repo 루트에 둔다.** CLI 세션 시작할 때 읽히면 지금까지의 맥락이 전부 전달된다. 특히 중요한 것은 8장(보고서 금지·주의 사항)과 7장(한계점 목록)이다. 이 둘이 보고서 품질을 좌우한다.
-
-### 첫 작업 3개 — 완료 (commit c06e8d2, 번호 규칙·한계점 수정은 후속 커밋)
-
-결과 json 4개 repo 업로드, route 1·6 단계 추출, RDKit 이미지 생성이 모두 끝났다. 산출물은 아래와 같다.
-
-| 산출물 | 위치 |
-| --- | --- |
-| 결과 json 4개 | `results/sotorasib_trees*.json` |
-| 재현 문서 (환경·명령어·4회 비교) | `results/README.md` |
-| 단계별 반응 SMILES | `results/steps/route_1.json`, `route_6.json` (+ `.md` 표) |
-| 반응식·구조식 이미지 | `results/images/route_<n>/` |
-| 추출 스크립트 | `scripts/extract_steps.py` |
-| 작도 스크립트 | `scripts/draw_route.py` |
-
-### 다음 작업 — 2주차 (11/8 일정), Parrot부터
-
-**입력은 `results/steps/route_1.json`과 `results/steps/route_6.json`의 `reaction_smiles` 필드다.**
-route 1은 10단계(점수 최고 0.8448), route 6은 12단계(Bn + TFA 보호기를 모두 명시한 화학적으로 가장 정합적인 경로).
-
-1. ~~**Parrot 설치 → 단계별 반응 조건 예측**~~ — **완료.** route 1·6의 22개 반응 전부 예측했다. 설치·실행 절차는 SKILL.md 3·4절, 결과와 문헌 비교는 `results/parrot/README.md`에 있다.
-   - **온도는 나오지 않는다.** 공개된 USPTO 모델의 출력은 촉매·용매·시약뿐이고, 온도를 내는 Reaxys 학습본은 라이선스 때문에 배포되지 않는다. 일정표의 "용매·시약·촉매·온도" 중 온도는 다른 수단이 필요하다.
-   - 성과: POCl₃ 염소화에 톨루엔 + DIPEA를 내서 **문헌 공정과 일치**했다. Suzuki·아마이드화·수소화도 반응 부류에 맞는 조건을 냈다.
-   - 한계: 화학적으로 불가능한 3단계(아세틸 클로라이드 고리 형성)에도 표준 아실화 조건을 아무 경고 없이 냈다. **조건 모델은 앞단의 오류를 걸러내지 못한다.**
-2. ~~**ASKCOS context recommender 시도**~~ — **완료. Docker 없이 성공했다.** 22개 반응 전부 예측했고, 설치·실행은 SKILL.md 3·4절, 결과는 `results/askcos/README.md`에 있다.
-   - **이 모델만 온도를 낸다.** Parrot의 빈칸이 채워졌다. 출력은 `[온도, 용매, 시약, 촉매, EHS점수, 최고여부]`.
-   - repo의 Docker/Singularity는 FastAPI 서비스를 감싸는 포장일 뿐이라, 예측기 클래스를 직접 import하면 서비스가 필요 없다. 가중치도 Dropbox 직링크라 로그인이 필요 없다. conda 환경 하나(약 1.5GB)로 끝났다.
-   - **가장 큰 성과**: 7.1절의 끓는점 규칙을 처음으로 적용할 수 있게 됐고, 조건 66개 중 **12개가 용매 끓는점을 넘었다.** 그 12개가 **전부 Suzuki 커플링 단계**다. 실제 공정은 2-MeTHF(끓는점 80 °C)에서 78 °C로 돌려 이 문제를 피한다. 모델은 온도와 용매를 따로 배워서 둘을 함께 쓸 수 없다는 것을 모른다.
-   - 조건 모델 둘이 서로 다른 답을 냈다 — 7단계 염소화에 Parrot은 톨루엔(문헌 일치), ASKCOS는 DCM. 모델을 여러 개 돌리면 답이 여러 개 나올 뿐 신뢰도가 오르지는 않는다.
-3. **rxn_yields 설치 → 단계별 수율 예측**
-4. **DRFP 기반 수율 예측** (rxn_yields와 비교용)
-5. **전체를 `run_pipeline.py` 하나로 연결**하고 결과를 json 하나로 모으기
-
-**조건 예측 결과를 검토할 때 SKILL.md 7절을 반드시 적용한다.** 특히 예측 온도가 용매 끓는점보다 높으면 그 조건은 쓸 수 없다 — 열린 플라스크는 용매 끓는점보다 뜨거워지지 않는다.
-
-**ground truth는 6장의 실제 공정 조건 표다.** 예측값을 이 숫자와 비교하면 된다.
-
-| 단계 | 실제 조건 | 실제 수율 |
-| --- | --- | --- |
-| Suzuki 커플링 | Pd(dpe)PhosCl₂ 0.3 mol%, KOAc 2.0 equiv, 2-MeTHF–H₂O 9:1, 78 °C, 4 h | 80% |
-| 염소화 + 피페라진 SNAr (원포트) | POCl₃ + DIPEA 톨루엔, 이어 i-PrOAc–DCM 20 °C | 66% |
-
-### 환경 재현 명령
-```
-conda create -n aizynth-env python=3.11
-conda activate aizynth-env
-pip install aizynthfinder==4.4.1 pyarrow==17.0.0 onnxruntime==1.19.2
-```
-
-**참고 링크**
-- repo: https://github.com/jang0920-eng/2026_organic-synthesis
-- 일정표: https://claude.ai/artifact/XconMnEYdZuDZcmfVgH3Sy
-- 물질 선정 문서: https://claude.ai/artifact/1m21ZLbUntah9XFf6ZRRSt
