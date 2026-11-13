@@ -29,7 +29,17 @@ description: 약물 이름 또는 SMILES가 주어지면 AI 모델로 합성 경
 
 ## 3. 환경 설치
 
-<!-- TODO: 모델별 conda 환경과 설치 명령어 -->
+모델들이 서로 충돌하는 의존성을 요구하므로 conda 환경을 나눠 쓴다. 한 환경에 다 몰아넣으려 하지 않는다.
+
+| 환경 | 쓰는 모델 | 핵심 버전 |
+|---|---|---|
+| `aizynth-env` | AiZynthFinder, RDKit 작도 | Python 3.11, aizynthfinder 4.4.1, onnxruntime 1.19.2 |
+| `parrot-env` | Parrot, rxn_yields, DRFP | Python 3.9, torch 1.13.1, transformers 4.18.0 |
+| `askcos-env` | ASKCOS context recommender | Python 3.8, tensorflow-cpu 2.7.4 |
+
+`run_pipeline.py`가 단계마다 해당 환경의 `python.exe`를 직접 부르므로, 환경을 번갈아 활성화할 필요는 없다.
+
+**Windows 공통 주의**: 옛 버전을 고정하면 pip가 소스 빌드로 빠져 실패하는 경우가 많다. `--only-binary=:all:`로 wheel을 강제하고, wheel이 없는 순수 파이썬 패키지는 따로 설치한다.
 
 ### AiZynthFinder
 
@@ -165,7 +175,10 @@ gdown "https://drive.google.com/uc?id=1gFV2KdVKaLCTeb3nrzopyYHXbM0G_cr_" -O outp
 
    - 별도 옵션이 없으면 expansion policy `uspto`, filter policy `uspto`, stock `zinc`가 사용된다.
    - 출력: 탐색 통계는 터미널에, 상위 경로는 `trees.json`에 저장된다 (`--output`으로 파일 이름 지정 가능).
-   - <!-- TODO: trees.json 구조, 상위 3개 경로 추출 방법 -->
+   - `trees.json`은 **경로 리스트**다. 각 경로는 mol 노드와 reaction 노드가 번갈아 나오는 트리이고, 리스트 앞쪽일수록 점수가 높다. 상위 n개를 쓰려면 앞에서 n개를 자르면 된다.
+   - mol 노드: `smiles`, `in_stock`, `children`. 루트의 `scores`에 `state score`·`number of reactions`·`number of pre-cursors in stock`이 있다.
+   - reaction 노드: `metadata`에 `policy_name`, `policy_probability`, `classification`이 있다. **`smiles` 필드는 역합성 템플릿이지 반응식이 아니다.**
+   - `is_solved: false`여도 경로는 저장된다. 재고에 없는 전구체가 남았다는 뜻이므로, 그 전구체가 무엇인지 확인해 보고서에 적는다.
 2. **경로 예측 (SynthEx)**: <!-- TODO -->
 3. **단계별 반응 SMILES 추출**
 
@@ -204,9 +217,38 @@ gdown "https://drive.google.com/uc?id=1gFV2KdVKaLCTeb3nrzopyYHXbM0G_cr_" -O outp
 
    - 출력: 조건마다 `[온도(°C), 용매, 시약, 촉매, EHS점수, 최고EHS여부]`.
    - 스크립트가 7.1절의 끓는점 규칙을 자동으로 적용해, 예측 온도가 용매 끓는점을 넘는 조건에 `끓는점 초과` 표시를 단다. **이 표시가 붙은 조건은 보고서에 그대로 쓰지 않는다.**
-5. **수율 예측 (Yield-BERT, DRFP)**: <!-- TODO -->
-6. **구조 이미지 생성 (RDKit)**: <!-- TODO -->
-7. **결과 취합**: <!-- TODO: 모든 결과를 하나의 json으로 모으는 방법 -->
+5. **수율 예측 (Yield-BERT, DRFP)**
+
+   ```powershell
+   conda activate parrot-env
+   python scripts/run_rxn_yields.py  --route 1 6 --splits 10
+   python scripts/run_drfp_yields.py --route 1 6 --splits 10
+   ```
+
+   - 두 모델 모두 **같은 Suzuki HTE 데이터, 같은 split**으로 학습한다. 반응 표현 방식만 다르므로 비교가 공정하다.
+   - 출력: 단계마다 `yield_mean_pct`와 `yield_std_pct`(앙상블 10개의 표준편차). 편차가 크면 그 예측은 신뢰할 수 없다는 뜻이다.
+   - `run_drfp_yields.py`는 홀드아웃 R²·RMSE를 함께 출력한다. **이 값이 정상인데 대상 분자 예측이 빗나가면 모델 결함이 아니라 학습 도메인 밖이라는 뜻이다.** 보고서에 이 구분을 적는다.
+   - **메모리 주의**: DRFP 단계는 XGBoost를 10번 학습해 수 GB를 쓴다. RAM 8GB 이하에서는 `--splits`를 5 이하로 줄인다.
+
+6. **구조 이미지 생성 (RDKit)**
+
+   ```powershell
+   conda activate aizynth-env
+   python scripts/draw_route.py results/steps/route_1.json
+   ```
+
+   - 출력(`results/images/route_<n>/`): 단계별 반응식 `step_NN.png`, 목표 분자 `target.png`, 전구체 모음 `precursors.png`, 전체 경로 `route_overview.png`.
+   - `--format svg`로 벡터 이미지도 만들 수 있다. 보고서에 크게 넣을 때 쓴다.
+
+7. **결과 취합**
+
+   ```powershell
+   python scripts/run_pipeline.py --only merge
+   ```
+
+   - `results/pipeline/sotorasib_pipeline.json` 하나에 단계마다 반응 SMILES, 경로 모델 확률, 조건 후보(Parrot·ASKCOS 각 3개), 수율 2종, 끓는점 검증 결과, 반응식 이미지 경로가 들어간다.
+   - 요약 표는 `sotorasib_pipeline.md`다. 보고서 5·6장의 표를 여기서 가져온다.
+   - 전체를 처음부터 돌리려면 `python scripts/run_pipeline.py`. 단계는 `--only`·`--skip`으로 고른다.
 8. **보고서 작성**: 아래 5~6절에 따라 작성한다.
 
 ## 5. 보고서 목차
