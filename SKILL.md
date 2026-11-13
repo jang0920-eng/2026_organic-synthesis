@@ -57,7 +57,46 @@ download_public_data "$env:USERPROFILE\github\aizynth-data"
 <!-- TODO -->
 
 ### Parrot
-<!-- TODO -->
+
+repo는 Linux에서만 테스트되었다. 동봉된 `envs_cpu.yaml`은 Linux 전용 빌드 문자열이 박힌 conda export라 Windows에서 쓸 수 없으므로, 코드가 실제로 import하는 것만 설치한다.
+
+```powershell
+git clone https://github.com/wangxr0526/Parrot.git parrot-src
+conda create -n parrot-env python=3.9 -y
+conda activate parrot-env
+
+pip install torch==1.13.1
+pip install transformers==4.18.0 tokenizers==0.12.1 huggingface-hub==0.11.1 `
+            simpletransformers==0.63.6 numpy==1.23.5 pandas==1.3.5
+pip install --no-deps rxnfp
+pip install --only-binary=:all: scipy==1.10.1 scikit-learn==1.3.2 rdkit==2023.9.6 `
+            matplotlib seaborn ipython pyyaml
+pip install tensorboardX bertviz pandarallel gdown
+pip install --only-binary=:all: pyarrow==12.0.1
+pip uninstall -y sentencepiece
+```
+
+Windows에서 반드시 필요한 조치 네 가지다.
+
+| 조치 | 이유 |
+|---|---|
+| `--only-binary=:all:`로 wheel 강제 | numpy를 낮게 고정하면 pip가 scipy를 2019년 sdist까지 거슬러 내려가 소스 빌드에 실패한다 |
+| `sentencepiece` 제거 | `pandas` 뒤에 import하면 access violation으로 프로세스가 죽는다. Parrot은 BERT 토크나이저만 쓰므로 없어도 된다 |
+| `pyarrow==12.0.1` 고정 | `datasets 2.13.2`가 최신 pyarrow에서 삭제된 `PyExtensionType`을 참조한다 |
+| `rxnfp`는 `--no-deps` | rxnfp가 Windows wheel이 없는 옛 버전을 하드 핀한다. 실제로 쓰는 `rxnfp.models`의 의존성은 이미 설치되어 있다 |
+
+`inference.py`는 한 곳을 고쳐야 한다. `pandarallel`의 `parallel_apply`가 Windows에서 `NameError`로 죽는다 (fork가 없어 워커가 spawn으로 뜨고 자식이 모듈 전역 함수를 찾지 못한다). Windows에서는 단일 프로세스 `apply`를 쓴다.
+
+모델·데이터는 추론에 필요한 두 개만 받는다.
+
+```powershell
+gdown "https://drive.google.com/uc?id=1aX70qzZrJ9TZ9KpqnvUVR8WBxiTwXOsI" -O dataset/source_dataset/USPTO_condition_final.zip
+gdown "https://drive.google.com/uc?id=1gFV2KdVKaLCTeb3nrzopyYHXbM0G_cr_" -O outputs/Parrot_train_in_USPTO_Condition_enhance.zip
+```
+
+데이터셋 zip은 전부 풀면 2.3GB다. 추론이 읽는 것은 `USPTO_condition_alldata_idx.pkl`(9.7KB) 하나이므로 작은 파일만 푼다.
+
+**온도는 예측되지 않는다.** 공개된 USPTO 모델의 출력은 촉매 1개·용매 2개·시약 2개뿐이다. 온도를 내는 모델은 Reaxys-TotalSyn-Condition 학습본인데 Reaxys 라이선스가 필요해 배포되지 않는다.
 
 ### rxn_yields
 <!-- TODO -->
@@ -80,8 +119,33 @@ download_public_data "$env:USERPROFILE\github\aizynth-data"
    - 출력: 탐색 통계는 터미널에, 상위 경로는 `trees.json`에 저장된다 (`--output`으로 파일 이름 지정 가능).
    - <!-- TODO: trees.json 구조, 상위 3개 경로 추출 방법 -->
 2. **경로 예측 (SynthEx)**: <!-- TODO -->
-3. **단계별 반응 SMILES 추출**: <!-- TODO -->
-4. **합성 조건 예측 (Parrot, ASKCOS)**: <!-- TODO -->
+3. **단계별 반응 SMILES 추출**
+
+   ```powershell
+   python scripts/extract_steps.py results/sotorasib_trees_v4.json --route 1 6
+   ```
+
+   - reaction 노드의 `smiles`는 역합성 템플릿이지 반응식이 아니다. 실제 반응은 (자식 mol들) `>>` (부모 mol)로 조립한다.
+   - 단계 번호는 정반응 순서다. 역합성 트리의 깊은 노드가 먼저 일어나는 반응이므로 깊이 내림차순으로 정렬하고, 같은 깊이면 서브트리가 깊은 쪽(주 사슬)을 먼저 쓴다.
+   - 출력: `results/steps/route_<n>.json`(반응 SMILES와 메타데이터), `route_<n>.md`(표).
+4. **합성 조건 예측 (Parrot, ASKCOS)**
+
+   ```powershell
+   python scripts/make_parrot_input.py results/steps/route_1.json results/steps/route_6.json
+
+   conda activate parrot-env
+   cd parrot-src
+   python inference.py --config_path configs/config_inference_use_uspto.yaml `
+                       --input_path  <repo>/results/parrot/route_1_input.txt `
+                       --output_path <repo>/results/parrot/route_1_conditions.csv `
+                       --num_workers 2 --inference_batch_size 8 --gpu -1
+   ```
+
+   - `--gpu -1`이 CPU 추론이다. 10단계에 3분 남짓 걸린다.
+   - 출력 csv의 열은 `rxn_smiles, top-k, catalyst1, solvent1, solvent2, reagent1, reagent2, scores`다. **온도 열은 없다.** `rxn_smiles`는 각 반응의 첫 행에만 채워지고 나머지는 빈 칸이며, 단계마다 top-15가 나온다.
+   - 출력에는 단계 번호가 없다. `make_parrot_input.py`가 만든 `route_<n>_index.csv`로 줄 번호와 단계 번호를 맞춘다.
+   - 읽을 수 있는 표로 정리: `python scripts/summarize_parrot.py --route 1 6`
+   - `scores`는 빔 서치의 로그 확률이라 0에 가까울수록 확신이 높다.
 5. **수율 예측 (Yield-BERT, DRFP)**: <!-- TODO -->
 6. **구조 이미지 생성 (RDKit)**: <!-- TODO -->
 7. **결과 취합**: <!-- TODO: 모든 결과를 하나의 json으로 모으는 방법 -->
@@ -120,6 +184,7 @@ download_public_data "$env:USERPROFILE\github\aizynth-data"
 | 검증 항목 | 쓰면 안 되는 주장 | 확인 방법 |
 |---|---|---|
 | 이탈기의 행방 | 원자 수지(atom balance)가 맞으니 그 단계는 성립한다 | 원자 수지가 맞는다고 메커니즘이 성립하는 것은 아니다. 이탈기(아실 클로라이드의 Cl 등)가 생성물에 치환기로 남아 있는 단계는 틀린 단계로 본다 |
+| 조건 예측의 신뢰 범위 | 조건 모델이 그럴듯한 조건을 냈으니 그 반응은 일어난다 | 조건 모델은 반응이 성립하는지 검증하지 않고, 성립한다고 전제하고 조건만 맞춘다. 화학적으로 불가능한 단계에도 표준 조건을 아무 경고 없이 낸다. 반응 타당성은 경로 단계에서 따로 판정한다 |
 | SN2 가능 여부 | sp² 탄소(방향족 고리, 비닐)나 고리 탄소에 SN2(뒤쪽 공격)가 일어난다 | 공격받는 탄소가 sp³인지 확인한다. LUMO 에너지가 낮아도 sp²면 SN2는 불가능하다. 방향족 C–N 결합은 Pd 촉매(Buchwald–Hartwig)로 만든다 |
 | SN1 가능 여부 | 1차(1°) 탄소나 메틸 탄소에서 SN1이 일어난다 | 카보양이온 안정성은 3° > 2° > 1° > 메틸이다. 1°에서는 양이온이 불안정해 SN1이 일어나지 않는다 |
 | 카복실산 유도체 변환 | 아마이드에서 acid chloride를, 또는 반응성이 낮은 유도체에서 높은 유도체를 직접 만든다 | 반응성 높음 → 낮음 방향으로만 변환된다. acid chloride → 아마이드는 가능하지만 역방향은 불가능하다 |
