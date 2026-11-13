@@ -54,7 +54,63 @@ download_public_data "$env:USERPROFILE\github\aizynth-data"
 <!-- TODO -->
 
 ### ASKCOS context recommender
-<!-- TODO -->
+
+**Docker는 필요 없다.** repo의 Docker/Singularity는 FastAPI 서비스를 감싸는 포장이고, 예측기 클래스를 직접 import하면 서비스 없이 쓸 수 있다. conda 환경 하나(약 1.5GB)로 끝난다.
+
+```powershell
+git clone https://gitlab.com/mlpds_mit/askcosv2/context_recommender.git askcos-context-src
+conda create -n askcos-env python=3.8 -y
+conda activate askcos-env
+pip install --only-binary=:all: tensorflow-cpu==2.7.4 scikit-learn==1.0.2 `
+            scipy==1.7.3 "numpy<1.24" rdkit==2022.9.5 protobuf==3.19.0
+```
+
+모델 가중치는 Dropbox 직링크라 로그인 없이 받는다 (143MB). repo의 `scripts/download_trained_models.sh`는 `wget`·`tar`를 쓰므로 Windows에서는 아래처럼 받는다.
+
+```powershell
+curl -L -o v1.tar.gz "https://www.dropbox.com/scl/fi/97g21iqzxz4gw4l83xjye/v1.tar.gz?rlkey=orny64sno8kd3cbspgbs53qd0&dl=1"
+tar xzf v1.tar.gz -C app/resources/models/context/
+```
+
+`weights.h5`(155MB), `model.json`, 라벨 사전 5개, 용매 EHS 점수표가 들어 있다.
+
+**이 모델만 온도를 예측한다.** Parrot의 공개본은 온도를 내지 않으므로, 보고서의 "합성 조건" 중 온도는 여기서 나온다.
+
+### rxn_yields
+
+Parrot과 같은 스택(rxnfp + simpletransformers)을 쓰므로 `parrot-env`를 그대로 쓴다.
+
+```powershell
+git clone https://github.com/rxn4chemistry/rxn_yields.git rxn-yields-src
+conda activate parrot-env
+```
+
+학습된 모델 818MB가 repo에 동봉되어 있어 별도 다운로드가 필요 없다.
+
+**출력은 표준화된 값이다.** 학습 세트의 mean·std로 역표준화하고 ×100, 0–100 클립해야 수율(%)이 된다. 이 보정을 빼면 숫자가 의미가 없다.
+
+| 동봉 모델 | 보정 가능? |
+|---|---|
+| `suzuki_miyaura` | 가능 — HTE 데이터가 repo에 있다 (mean 0.4033, std 0.2819) |
+| `buchwald_hartwig` | 가능 — HTE 데이터가 repo에 있다 |
+| `uspto` (범용) | **불가능** — 학습 데이터가 로그인이 필요한 IBM Box에 있다 |
+
+Windows에서 두 곳을 고쳐야 한다.
+
+- `model.loss_fct = None`을 넣는다. rxnfp 0.1.0이 옛 simpletransformers 기준이라 이 속성을 설정하지 않는데, 0.63.6의 `predict`가 요구한다.
+- `use_multiprocessing: False`, `process_count: 1`로 둔다. fork가 없어 피처 변환이 배치당 30초 이상 걸린다.
+
+### DRFP
+
+**DRFP은 지문 인코더일 뿐 수율 모델이 아니다.** 회귀 모델을 직접 학습해야 한다. Yield-BERT와 같은 HTE 데이터·같은 split으로 XGBoost를 학습하면 반응 표현만 다른 비교가 된다.
+
+```powershell
+conda activate parrot-env
+pip install drfp
+pip install --only-binary=:all: xgboost
+```
+
+Windows 패치가 하나 필요하다. drfp 0.3.6은 `blake2b(digest_size=4)` 결과를 `np.int32`에 담는데, 이 값은 부호 없는 32비트라 2^31을 넘으면 `OverflowError`가 난다. `np.uint32`로 담으면 된다 (digest의 원래 의미에도 맞다).
 
 ### Parrot
 
@@ -98,15 +154,7 @@ gdown "https://drive.google.com/uc?id=1gFV2KdVKaLCTeb3nrzopyYHXbM0G_cr_" -O outp
 
 **온도는 예측되지 않는다.** 공개된 USPTO 모델의 출력은 촉매 1개·용매 2개·시약 2개뿐이다. 온도를 내는 모델은 Reaxys-TotalSyn-Condition 학습본인데 Reaxys 라이선스가 필요해 배포되지 않는다.
 
-### rxn_yields
-<!-- TODO -->
-
-### DRFP
-<!-- TODO -->
-
 ## 4. 실행 순서
-
-<!-- TODO: 모델을 하나씩 붙일 때마다 명령어와 출력 형식을 채운다 -->
 
 1. **경로 예측 (AiZynthFinder)**
 
@@ -146,6 +194,16 @@ gdown "https://drive.google.com/uc?id=1gFV2KdVKaLCTeb3nrzopyYHXbM0G_cr_" -O outp
    - 출력에는 단계 번호가 없다. `make_parrot_input.py`가 만든 `route_<n>_index.csv`로 줄 번호와 단계 번호를 맞춘다.
    - 읽을 수 있는 표로 정리: `python scripts/summarize_parrot.py --route 1 6`
    - `scores`는 빔 서치의 로그 확률이라 0에 가까울수록 확신이 높다.
+
+   온도는 ASKCOS로 채운다. Docker 없이 예측기를 직접 호출한다.
+
+   ```powershell
+   conda activate askcos-env
+   python scripts/run_askcos.py --route 1 6
+   ```
+
+   - 출력: 조건마다 `[온도(°C), 용매, 시약, 촉매, EHS점수, 최고EHS여부]`.
+   - 스크립트가 7.1절의 끓는점 규칙을 자동으로 적용해, 예측 온도가 용매 끓는점을 넘는 조건에 `끓는점 초과` 표시를 단다. **이 표시가 붙은 조건은 보고서에 그대로 쓰지 않는다.**
 5. **수율 예측 (Yield-BERT, DRFP)**: <!-- TODO -->
 6. **구조 이미지 생성 (RDKit)**: <!-- TODO -->
 7. **결과 취합**: <!-- TODO: 모든 결과를 하나의 json으로 모으는 방법 -->

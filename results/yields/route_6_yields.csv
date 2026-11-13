@@ -1,0 +1,13 @@
+step,policy_name,policy_probability,is_suzuki,yield_mean_pct,yield_std_pct,reaction_smiles
+1,uspto,0.036400001496076584,True,20.9,9.4,C=C(C)B1OC(C)(C)C(C)(C)O1.Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O
+2,ringbreaker,0.036400001496076584,False,15.3,8.0,CC(=O)Cl.C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21
+3,uspto,0.00800000037997961,False,31.5,9.8,C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21
+4,uspto,0.011800000444054604,False,18.5,6.9,F[N+]12CC[N+](CCl)(CC1)CC2.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21
+5,uspto,0.00989999994635582,False,35.2,13.2,Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21
+6,uspto,0.6685000061988831,False,42.9,10.2,C[C@H]1CNCCN1Cc1ccccc1.O=C(OC(=O)C(F)(F)F)C(F)(F)F>>C[C@H]1CN(C(=O)C(F)(F)F)CCN1Cc1ccccc1
+7,uspto,0.13199999928474426,False,27.7,13.9,O=P(Cl)(Cl)Cl.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21
+8,uspto,0.17509999871253967,False,47.3,7.2,C[C@H]1CN(C(=O)C(F)(F)F)CCN1Cc1ccccc1>>C[C@H]1CN(C(=O)C(F)(F)F)CCN1
+9,uspto,0.06679999828338623,False,22.4,7.7,C[C@H]1CN(C(=O)C(F)(F)F)CCN1.Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCN(C(=O)C(F)(F)F)C[C@@H]2C)c2cc(F)c(Cl)nc21
+10,uspto,0.0421999990940094,False,28.1,11.0,Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCN(C(=O)C(F)(F)F)C[C@@H]2C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCNC[C@@H]2C)c2cc(F)c(Cl)nc21
+11,uspto,0.2554999887943268,False,30.5,10.6,C=CC(=O)O.Cc1ccnc(C(C)C)c1-n1c(=O)nc(N2CCNC[C@@H]2C)c2cc(F)c(Cl)nc21>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1
+12,uspto,0.0017000000225380063,True,17.8,5.3,CC1(C)OB(c2c(O)cccc2F)OC1(C)C.C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(-c4c(O)cccc4F)c(F)cc23)[C@@H](C)C1
