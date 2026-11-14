@@ -107,9 +107,13 @@ def digest_conditions(bundle, route_key):
             bp = f"  ** 끓는점({a1['solvent_bp_c']}°C) 초과 — 열린 플라스크 불가 **"
         lines.append(
             f"  단계 {s['step']}:\n"
+            # 구분자로 /를 쓰면 안 된다. /는 SMILES의 결합 기호여서 두 시약이
+            # 하나의 엉뚱한 분자로 이어져 보고서에 그대로 실린다.
             f"      Parrot  촉매={p1.get('catalyst') or '없음'} "
-            f"용매={p1.get('solvent1') or '-'}/{p1.get('solvent2') or '-'} "
-            f"시약={p1.get('reagent1') or '-'}/{p1.get('reagent2') or '-'} "
+            f"용매1={p1.get('solvent1') or '없음'} "
+            f"용매2={p1.get('solvent2') or '없음'} "
+            f"시약1={p1.get('reagent1') or '없음'} "
+            f"시약2={p1.get('reagent2') or '없음'} "
             f"score={p1.get('score')}\n"
             f"      ASKCOS  온도={a1.get('temperature_c')}°C "
             f"용매={a1.get('solvent')} 시약={a1.get('reagent') or '없음'} "
@@ -122,6 +126,7 @@ def digest_yields(bundle, route_key):
     r = bundle["routes"][route_key]
     lines = [f"[{route_key}] 단계별 수율 — Yield-BERT / DRFP+XGBoost "
              f"(둘 다 Suzuki HTE 학습, 10 split 앙상블, 단위 %)"]
+    prod = {"yield_bert_mean_pct": 1.0, "drfp_mean_pct": 1.0}
     for s in r["steps"]:
         y = s["yield"]
         lines.append(
@@ -129,6 +134,18 @@ def digest_yields(bundle, route_key):
             f"±{y.get('yield_bert_std_pct')}  /  "
             f"DRFP {y.get('drfp_mean_pct')}±{y.get('drfp_std_pct')}"
         )
+        for key in prod:
+            v = y.get(key)
+            if v is not None:
+                prod[key] *= v / 100.0
+
+    # 총수율은 여기서 계산해 넘긴다. 22단계 곱셈을 모델에 맡기면 틀리고,
+    # 값이 1e-8 수준이라 소수로 전개하다 토큰 한도에 걸린다.
+    lines.append(
+        f"  [총수율 — 계산된 추정값, 지수 표기로 그대로 옮긴다]\n"
+        f"      Yield-BERT 단계 곱: {prod['yield_bert_mean_pct'] * 100:.2e} %\n"
+        f"      DRFP 단계 곱:      {prod['drfp_mean_pct'] * 100:.2e} %"
+    )
     return "\n".join(lines)
 
 
@@ -150,13 +167,24 @@ def build_chapters(bundle):
     limits = analysis_section(5)
     selection = analysis_section(1)
     run_results = analysis_section(2)
+    # 대상 물질의 식별 정보. analysis.md에는 SMILES가 없어 모델이 지어냈던 자리다.
+    # 번들에서 읽으므로 다른 분자에도 그대로 동작한다.
+    identity = (
+        f"[대상 물질 식별 정보 — 이 값을 그대로 옮겨 적는다]\n"
+        f"  이름: {bundle['target']}\n"
+        f"  SMILES: {bundle['target_smiles']}\n"
+        f"  PubChem CID: {bundle['pubchem_cid']}"
+    )
 
     return [
         {
             "no": 2, "title": "대상 물질과 선정 이유", "tokens": 1200,
-            "context": selection,
+            "context": identity + "\n\n" + selection,
             "task": "대상 물질 소토라십의 구조·용도·작용 기전을 쓰고, 이 물질을 고른 "
-                    "이유를 자료에 있는 근거로 설명한다. SMILES를 명시한다. "
+                    "이유를 자료에 있는 근거로 설명한다. "
+                    "SMILES와 PubChem CID는 자료의 식별 정보에 있는 문자열을 한 글자도 "
+                    "바꾸지 않고 그대로 옮긴다. SMILES를 직접 작성하거나 기억으로 "
+                    "채우지 않는다. "
                     "KRAS G12C 억제제라는 점과 축 비대칭(atropisomerism)을 갖는다는 점을 포함한다.",
         },
         {
@@ -185,17 +213,24 @@ def build_chapters(bundle):
                     "온도는 ASKCOS만 예측한다는 점을 명시한다. "
                     "끓는점을 넘는 조건은 반드시 표시하고, 열린 플라스크에서 재현할 수 "
                     "없다는 것과 실제 공정이 2-MeTHF(끓는점 80도)에서 78도로 돌려 이 "
-                    "문제를 피한 것을 대조한다. 실제 공정 조건과도 비교한다.",
+                    "문제를 피한 것을 대조한다. 실제 공정 조건과도 비교한다. "
+                    "시약1·시약2처럼 자료에 따로 적힌 성분은 표에서도 따로 적는다. "
+                    "두 SMILES를 이어 붙여 하나처럼 쓰지 않는다.",
         },
         {
-            "no": 6, "title": "단계별 예측 수율", "tokens": 2200,
+            "no": 6, "title": "단계별 예측 수율", "tokens": 3000,
             "context": yield_digest + "\n\n[실제 공정 수율]\n" + literature
                        + "\n\n[수율 모델 상세]\n" + read("results/yields/README.md"),
             "task": "단계별 수율과 총수율을 표로 정리하고 두 모델을 비교한다. "
                     "두 모델 모두 Suzuki HTE 데이터로 학습해 다른 반응은 학습 도메인 "
                     "밖이라는 점을 반드시 밝힌다. 실제 공정 수율(Suzuki 80%, 염소화+SNAr "
                     "66%, 전체 65%)과 비교해 과소평가 정도를 수치로 쓴다. "
-                    "총수율은 단계 수율의 곱으로 계산하되 '추정값'임을 표시한다.",
+                    "총수율은 자료에 이미 계산되어 있다. 직접 곱하지 말고 자료의 값을 "
+                    "지수 표기(예: 1.2e-08 %)로 그대로 옮기고 '추정값'임을 표시한다. "
+                    "0.0000... 같은 소수 전개를 절대 쓰지 않는다. "
+                    "두 경로를 모두 다룬다. "
+                    "총수율이 사실상 0이 되는 이유가 "
+                    "학습 도메인 밖 단계에 낮은 수율이 반복 곱해진 탓임을 설명한다.",
         },
         {
             "no": 7, "title": "종합 결론", "tokens": 1800,
@@ -237,6 +272,8 @@ SYSTEM_PROMPT = """너는 유기합성 전공자가 제출할 한국어 보고�
 작성 규칙
 - 한국어 문어체(~이다, ~한다)로 쓴다. 구어체·높임말을 쓰지 않는다.
 - 수치는 주어진 자료의 값을 그대로 쓴다. 자료에 없는 수치를 지어내지 않는다.
+- SMILES는 자료에 있는 문자열만 복사해서 쓴다. 기억으로 쓰거나 직접 조립하지 않는다.
+  자료에 없으면 그 자리에 SMILES를 적지 않는다.
 - 계산으로 얻은 값은 반드시 "추정값"이라고 표시한다.
 - 자료에 없는 내용은 쓰지 않는다. 결과가 없으면 "예측 실패"로 적는다.
 - 표와 그림에는 번호와 제목을 붙인다.
