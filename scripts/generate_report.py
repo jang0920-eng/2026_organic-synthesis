@@ -78,8 +78,10 @@ def load_pipeline():
 def digest_route(bundle, route_key):
     """경로 한 개를 표 형태 텍스트로 압축한다 (토큰 절약 + 출력 품질)."""
     r = bundle["routes"][route_key]
-    lines = [f"[{route_key}] {r['n_steps']}단계, "
-             f"state score {r['scores'].get('state score')}"]
+    # state score는 소수 16자리로 들어 있다. 그대로 넘기면 보고서에도 그대로 실린다.
+    score = r["scores"].get("state score")
+    score_txt = f"{score:.4f}" if isinstance(score, (int, float)) else str(score)
+    lines = [f"[{route_key}] {r['n_steps']}단계, state score {score_txt}"]
     for s in r["steps"]:
         rm = s["route_model"]
         lines.append(
@@ -152,6 +154,34 @@ def digest_yields(bundle, route_key):
 # --------------------------------------------------------------------------
 # 장 정의
 # --------------------------------------------------------------------------
+
+def bp_summary(bundle):
+    """끓는점 초과 건수를 번들에서 직접 센다.
+
+    요약이 이 건수를 "두 건"으로 잘못 세어 8장(12건)과 어긋났다.
+    모델에게 세게 하지 않고 계산해서 넘긴다.
+    """
+    total = over = top1 = top1_over = 0
+    steps = []
+    for rk, r in bundle["routes"].items():
+        for s in r["steps"]:
+            for i, e in enumerate(s["conditions"]["askcos"]):
+                total += 1
+                if e.get("above_boiling_point"):
+                    over += 1
+                if i == 0:
+                    top1 += 1
+                    if e.get("above_boiling_point"):
+                        top1_over += 1
+            if any(e.get("above_boiling_point")
+                   for e in s["conditions"]["askcos"]):
+                steps.append(f"{rk} 단계 {s['step']}")
+    return (
+        f"ASKCOS 조건 전체 {total}개 중 끓는점 초과 {over}개\n"
+        f"  top-1만 보면 {top1}개 중 {top1_over}개\n"
+        f"  초과가 포함된 단계 {len(steps)}개: {', '.join(steps)}"
+    )
+
 
 def build_chapters(bundle):
     route_digest = "\n\n".join(
@@ -264,8 +294,22 @@ def build_chapters(bundle):
             "no": 1, "title": "요약", "tokens": 900,
             "context": "",  # 다른 장을 모두 쓴 뒤 생성한다
             "task": "보고서 전체의 요약을 반 쪽 이내로 쓴다. 대상 물질, 예측된 경로, "
-                    "예상 총수율, 핵심 결론을 담는다. 아래에 다른 장의 내용이 주어진다.",
+                    "예상 총수율, 핵심 결론을 담는다. 아래에 다른 장의 내용이 주어진다. "
+                    "SMILES 문자열은 2장에 있으므로 요약에는 넣지 않는다. "
+                    "물질명과 PubChem CID까지만 쓴다. "
+                    "한 단락이 열 줄을 넘지 않게 끊어 쓴다. "
+                    "자료에 총수율이 있으면 지수 표기로 제시한다. 자료가 부족하다거나 "
+                    "표가 잘렸다는 식으로 자료 상태를 언급하지 않는다. "
+                    "끓는점 초과 조건 건수는 이 보고서의 핵심 결과이므로 자료에 주어진 "
+                    "숫자를 그대로 넣어 반드시 밝힌다. 건수를 직접 세지 않는다.",
             "needs_others": True,
+            # 다른 장은 앞 2500자만 넘기므로 6장 뒤쪽의 총수율이 요약에 보이지
+            # 않았다. 핵심 수치는 잘릴 위치에 두지 않고 따로 넘긴다.
+            "tail_context": "\n".join(
+                line for line in yield_digest.splitlines()
+                if "총수율" in line or "단계 곱" in line
+            ) + "\n\n[끓는점 초과 건수 — 직접 세지 말고 이 값을 쓴다]\n"
+              + bp_summary(bundle),
         },
     ]
 
@@ -282,6 +326,9 @@ SYSTEM_PROMPT = """너는 유기합성 전공자가 제출할 한국어 보고�
 - 표와 그림에는 번호와 제목을 붙인다.
 - 전문용어는 강의 표기를 따른다: 친핵체, 친전자체, 이탈기, 사면체 중간체,
   addition-elimination, SNAr, Buchwald-Hartwig.
+- 약어와 돌연변이 표기는 처음 나올 때 괄호로 짧게 풀어 쓴다. 예를 들어
+  "KRAS G12C"는 그 표기가 뜻하는 아미노산 치환을 괄호로 설명한다.
+  두 번째 언급부터는 약어만 쓴다.
 
 화학적 검증 규칙 (어기면 감점이다)
 - sp2 탄소(방향족·비닐)에는 SN2가 일어나지 않는다. 방향족 C-N 결합은 SNAr이거나
@@ -443,6 +490,8 @@ def main():
                 if f.exists():
                     others.append(f.read_text(encoding="utf-8")[:2500])
             context = "\n\n".join(others)
+            if c.get("tail_context"):
+                context += "\n\n[핵심 수치 — 아래 값을 그대로 쓴다]\n" + c["tail_context"]
 
         user = (
             f"다음 자료를 바탕으로 보고서의 {c['no']}장 「{c['title']}」을 쓴다.\n\n"
