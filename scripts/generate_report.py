@@ -199,9 +199,12 @@ def build_chapters(bundle):
             "no": 4, "title": "예측 합성 경로", "tokens": 3000,
             "context": route_digest,
             "task": "두 경로를 각각 단계별로 설명한다. 단계마다 반응 유형과 메커니즘을 "
-                    "친핵체·친전자체·이탈기 용어로 설명한다. 각 단계 그림은 "
-                    "`results/images/route_<n>/step_NN.png`를 참조하라는 그림 번호와 "
-                    "캡션을 넣는다. route 1은 점수 최고, route 6은 보호기를 모두 명시한 "
+                    "친핵체·친전자체·이탈기 용어로 설명한다. "
+                    "각 단계 그림은 마크다운 이미지 문법으로 넣어 실제로 보이게 한다. "
+                    "형식은 정확히 다음과 같다 — "
+                    "![그림 4.N. 단계 N 반응 모식도](../images/route_<n>/step_NN.png) "
+                    "경로는 `../images/`로 시작해야 한다. 경로를 글자로만 적지 않는다. "
+                    "route 1은 점수 최고, route 6은 보호기를 모두 명시한 "
                     "가장 정합적인 경로임을 밝힌다. "
                     "주의: 피리미딘 C4의 염소를 피페라진 질소가 치환하는 단계는 sp2 "
                     "탄소에서 일어나므로 SN2가 아니라 SNAr(addition-elimination)이다.",
@@ -349,6 +352,44 @@ def call_solar(system, user, max_tokens, retries=3):
 
 # --------------------------------------------------------------------------
 
+# 보고서는 results/report/에 놓이고 그림은 results/images/에 있으므로
+# 보고서 기준 상대 경로는 ../images/ 다.
+IMG_RE = re.compile(r"(?:\.\./images|results/images)/(route_\d+/[A-Za-z0-9_]+\.png)")
+
+
+def normalize_images(text):
+    """그림 참조를 깃허브에서 보이는 마크다운 이미지로 바꾼다.
+
+    모델이 경로를 글자로만 적거나 경로 깊이를 틀리는 일이 있어, 생성물에
+    기대지 않고 여기서 한 번 더 맞춘다. 보고서를 직접 고치는 것이 아니라
+    조립 규칙이므로 다른 분자에도 그대로 동작한다.
+    """
+    # 1) 이미 이미지 문법인 것은 경로만 ../images/로 맞춘다
+    text = re.sub(
+        r"!\[([^\]]*)\]\(\s*(?:\.\./images|results/images)/(route_\d+/[A-Za-z0-9_]+\.png)\s*\)",
+        r"![\1](../images/\2)",
+        text,
+    )
+
+    # 2) 글자로만 적힌 그림 줄을 이미지로 바꾼다
+    #    예: "그림: 그림 4.1. `results/images/route_1/step_01.png` — 단계 1 반응 모식도."
+    def line_to_image(m):
+        caption = (m.group("cap") or "").strip(" .—-")
+        label = (m.group("label") or "").strip(" .")
+        alt = f"{label}. {caption}" if label and caption else (label or caption or "반응 모식도")
+        return f"![{alt}](../images/{m.group('path')})"
+
+    text = re.sub(
+        r"^\s*(?:그림[:：]\s*)?(?P<label>그림\s*[\d.]+)?\s*\.?\s*`?"
+        r"(?:\.\./images|results/images)/(?P<path>route_\d+/[A-Za-z0-9_]+\.png)`?"
+        r"\s*(?:[—–-]\s*(?P<cap>[^\n]*))?$",
+        line_to_image,
+        text,
+        flags=re.M,
+    )
+    return text
+
+
 def assemble():
     """장 파일을 번호 순으로 합쳐 보고서 하나로 만든다."""
     OUTDIR.mkdir(parents=True, exist_ok=True)
@@ -357,7 +398,7 @@ def assemble():
     for no in range(1, 11):
         f = CHAPTER_DIR / f"ch{no:02d}.md"
         if f.exists():
-            parts += [f.read_text(encoding="utf-8").strip(), ""]
+            parts += [normalize_images(f.read_text(encoding="utf-8").strip()), ""]
         elif no == 9:
             continue  # 선택 항목
         else:

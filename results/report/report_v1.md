@@ -103,102 +103,124 @@ RDKit을 사용하여 구조 이미지를 생성한다. 출력은 `results/image
 
 ## 4. 예측 합성 경로
 
-본 장에서는 예측된 두 합성 경로(route 1, route 6)를 단계별로 서술한다. 각 단계는 반응 유형과 메커니즘을 친핵체·친전자체·이탈기 관점에서 설명하며, 단계별 그림은 `results/images/route_<n>/step_NN.png`를 참조한다.
+본 장에서는 두 예측 합성 경로(route 1, route 6)를 단계별로 서술한다. 각 단계는 반응 유형과 메커니즘을 친핵체·친전자체·이탈기 용어로 설명하며, 반응 모식도는 마크다운 이미지 문법으로 제시한다. route 1은 state score가 0.8447790869906586으로 두 경로 중 가장 높아 점수가 최고인 경로이다. route 6은 12단계로 구성되며, 보호기를 모두 명시한 가장 정합적인 경로이다.
 
-### 4.1 Route 1 (10단계, state score 0.8447790869906586)
-
-Route 1은 두 경로 중 state score가 가장 높은 경로이다. 총 10단계로 구성되며, 각 단계는 다음과 같다.
+### 4.1. Route 1 (10단계, state score 0.8447790869906586)
 
 **단계 1.**  
-반응식: `CN(C)C=O.Cc1ccnc(Br)c1-n1c(N)cc(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O`  
-정책: uspto, p=0.398, 분류: 0.0 Unrecognized  
-그림: 그림 4.1. `results/images/route_1/step_01.png` — 단계 1 반응 모식도.
+반응물: CN(C)C=O, Cc1ccnc(Br)c1-n1c(N)cc(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+생성물: Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+정책=uspto, p=0.398, 분류=0.0 Unrecognized
 
-아세톤(CN(C)C=O)이 친핵체로 작용하여 피리미딘 고리의 C5 위치 탄소를 친전자체로 공격한다. 이 과정에서 아세톤의 α-수소가 이탈하고, 피리미딘 고리의 N1에 결합된 수소(또는 활성 수소)가 제거되며 C–C 결합이 형성된다. 생성물은 피리미딘 C5에 아세틸기(C=O)가 도입된 구조이다.
+![그림 4.1. 단계 1 반응 모식도](../images/route_1/step_01.png)
+
+이 단계는 아세톤(CN(C)C=O)의 카보닐 탄소가 친전자체로 작용하고, 피리미딘-피리미딘온 골격의 아미노기(–N)가 친핵체로 작용하여 축합 반응을 일으키는 것으로 해석된다. 아세톤의 카보닐 산소가 이탈기 역할을 하여 C–N 결합이 형성되고, 피리미딘 C4 위치의 아미노기가 아세틸기로 치환된다. sp3 탄소에서의 친핵성 치환에 가까운 축합으로 볼 수 있다.
 
 **단계 2.**  
-반응식: `C=C(C)B1OC(C)(C)C(C)(C)O1.Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O`  
-정책: uspto, p=0.036, 분류: 0.0 Unrecognized  
-그림: 그림 4.2. `results/images/route_1/step_02.png` — 단계 2 반응 모식도.
+반응물: C=C(C)B1OC(C)(C)C(C)(C)O1, Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+생성물: C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+정책=uspto, p=0.036, 분류=0.0 Unrecognized
 
-이소프로페닐 보호기(C=C(C)B1OC(C)(C)C(C)(C)O1)가 피리미딘 고리의 C5 메틸기와 반응하여 고리 재배열이 일어난다. 친핵체는 피리미딘 고리의 질소 또는 탄소 중심이며, 친전자체는 이소프로페닐기의 이중결합 탄소이다. 이 단계에서 피리미딘 고리의 치환 패턴이 변화하여 C5 메틸기가 도입된다.
+![그림 4.1. 단계 2 반응 모식도](../images/route_1/step_02.png)
+
+이 단계는 이소프로페닐 보호기 도입 반응으로, C=C(C)B1OC(C)(C)C(C)(C)O1의 비닐 탄소가 친전자체, 피리미딘 고리의 C5 위치(또는 관련 탄소)가 친핵체로 작용하여 부가 반응이 일어난다. 브롬(Br)이 이탈기로 떨어져 나가면서 비닐기가 피리미딘 고리에 결합한다. sp2 탄소에서의 치환이므로 SN2가 아닌 친전자성 부가 또는 교차 커플링 유형의 반응으로 분류된다.
 
 **단계 3.**  
-반응식: `CC(=O)Cl.C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21`  
-정책: ringbreaker, p=0.036, 분류: 0.0 Unrecognized  
-그림: 그림 4.3. `results/images/route_1/step_03.png` — 단계 3 반응 모식도.
+반응물: CC(=O)Cl, C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+생성물: C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21  
+정책=ringbreaker, p=0.036, 분류=0.0 Unrecognized
 
-아세틸 클로라이드(CC(=O)Cl)가 친전자체로 작용하여 피리미딘 고리의 N1 질소를 친핵체로 공격한다. 아세틸기의 염소가 이탈기로 떨어져 나가며 아미드 결합이 형성된다. 동시에 피리미딘 고리의 C4 위치에 염소(Cl)가 도입된 피리미딘 고리가 형성된다. 이 단계는 피리미딘 고리의 개환-재폐환 과정을 포함한다.
+![그림 4.1. 단계 3 반응 모식도](../images/route_1/step_03.png)
+
+아세틸 클로라이드(CC(=O)Cl)의 카보닐 탄소가 친전자체, 피리미딘 아미노기가 친핵체로 작용하여 아미드 결합이 형성된다. 염화 이온(Cl⁻)이 이탈기로 떨어져 나가며, 피리미딘-피리미딘온 골격의 아미노기가 아세틸화된다. 동시에 피리미딘 고리의 염소 치환 패턴이 변화하는 것은 고리 재배열 또는 고리 열림-재폐합(ringbreaker) 정책과 관련된 구조 변화로 해석된다.
 
 **단계 4.**  
-반응식: `C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21`  
-정책: uspto, p=0.008, 분류: 0.0 Unrecognized  
-그림: 그림 4.4. `results/images/route_1/step_04.png` — 단계 4 반응 모식도.
+반응물: C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21  
+생성물: Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21  
+정책=uspto, p=0.008, 분류=0.0 Unrecognized
 
-이소프로페닐 보호기가 제거되고 tert-부틸기(C(C)C)로 치환된다. 친핵체는 tert-부틸 음이온 또는 tert-부틸 라디칼이며, 친전자체는 이소프로페닐기의 이중결합 탄소이다. 이 단계에서 피리미딘 고리의 C5 치환기가 이소프로페닐에서 tert-부틸로 변환된다.
+![그림 4.1. 단계 4 반응 모식도](../images/route_1/step_04.png)
+
+이 단계는 이소프로페닐기의 이성질화 또는 메틸기 이동으로 해석된다. 비닐기(C=C(C))가 피리미딘 고리의 C5 위치에 메틸기(C(C)C)로 변환된다. 친핵체·친전자체·이탈기의 명확한 치환보다는 골격 재배열에 가까우며, 실릴 보호기(O[Si](C(C)C)(C(C)C)C(C)C)는 유지된다.
 
 **단계 5.**  
-반응식: `F[N+]12CC[N+](CCl)(CC1)CC2.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21`  
-정책: uspto, p=0.012, 분류: 0.0 Unrecognized  
-그림: 그림 4.5. `results/images/route_1/step_05.png` — 단계 5 반응 모식도.
+반응물: F[N+]12CC[N+](CCl)(CC1)CC2, Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21  
+생성물: Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21  
+정책=uspto, p=0.012, 분류=0.0 Unrecognized
 
-DAST 유사 시약(F[N+]12CC[N+](CCl)(CC1)CC2)이 친전자체로 작용하여 피리미딘 고리의 C4 위치 염소를 불소(F)로 치환한다. 이 반응은 친핵성 치환이 아닌 친전자성 불소 도입 반응으로, 피리미딘 고리의 C4 염소가 이탈기 역할을 하고 불소가 도입된다. 생성물은 C4에 불소가 도입된 피리미딘 유도체이다.
+![그림 4.1. 단계 5 반응 모식도](../images/route_1/step_05.png)
+
+이 단계는 다이아조늄 염(F[N+]12CC[N+](CCl)(CC1)CC2)을 이용한 플루오로화 반응이다. 다이아조늄기의 질소 이탈 후 플루오린(F)이 피리미딘 고리의 C5 위치에 도입된다. 친전자체는 다이아조늄 탄소, 친핵체는 플루오린 음이온 또는 관련 종으로 볼 수 있으며, 질소 기체(N₂)가 이탈기로 빠져나간다. sp2 탄소에서의 친핵성 방향족 치환(SNAr) 유형으로 분류된다.
 
 **단계 6.**  
-반응식: `Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21`  
-정책: uspto, p=0.010, 분류: 0.0 Unrecognized  
-그림: 그림 4.6. `results/images/route_1/step_06.png` — 단계 6 반응 모식도.
+반응물: Cc1ccnc(C(C)C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2cc(F)c(Cl)nc21  
+생성물: Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21  
+정책=uspto, p=0.010, 분류=0.0 Unrecognized
 
-실릴 보호기(O[Si](C(C)C)(C(C)C)C(C)C)가 제거되어 하이드록실기(O)로 변환된다. 친핵체는 물 또는 알코올이며, 친전자체는 실릴기의 실리콘 원자이다. 실릴기가 이탈기로 떨어져 나가고 하이드록실기가 노출된다. 이 단계에서 피리미딘 고리의 C4 위치 실릴 에터가 탈보호된다.
+![그림 4.1. 단계 6 반응 모식도](../images/route_1/step_06.png)
+
+실릴 보호기(O[Si](C(C)C)(C(C)C)C(C)C)가 제거되어 하이드록시기(–O)로 전환된다. 친핵체는 물 또는 플루오라이드 이온, 친전자체는 실릴 탄소, 이탈기는 실릴기로 볼 수 있다. 실릴기의 제거는 산 또는 플루오라이드 조건에서 일어나며, 피리미딘 고리의 다른 치환기는 유지된다.
 
 **단계 7.**  
-반응식: `O=P(Cl)(Cl)Cl.Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21>>Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21`  
-정책: uspto, p=0.132, 분류: 0.0 Unrecognized  
-그림: 그림 4.7. `results/images/route_1/step_07.png` — 단계 7 반응 모식도.
+반응물: O=P(Cl)(Cl)Cl, Cc1ccnc(C(C)C)c1-n1c(=O)nc(O)c2cc(F)c(Cl)nc21  
+생성물: Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21  
+정책=uspto, p=0.132, 분류=0.0 Unrecognized
 
-POCl₃(O=P(Cl)(Cl)Cl)가 친전자체로 작용하여 피리미딘 고리의 C4 위치 하이드록실기를 염소(Cl)로 치환한다. 하이드록실기가 이탈기로 떨어져 나가고 염소가 도입된다. 이 반응은 POCl₃의 염소가 친핵체(물 또는 하이드록실기)와 반응하여 HCl을 생성하며, 피리미딘 고리의 C4 위치가 염소로 치환되는 과정이다.
+![그림 4.1. 단계 7 반응 모식도](../images/route_1/step_07.png)
+
+포스겐 유사체(O=P(Cl)(Cl)Cl)를 이용한 하이드록시기의 염소 치환 반응이다. 하이드록시 산소 원자가 친핵체로 작용하여 포스겐의 카보닐 탄소를 공격한 후, 염화 이온이 이탈기로 떨어져 나가며 최종적으로 –O–가 –Cl로 치환된다. 카복실산 유도체의 반응성 순서상 산 클로라이드 형성 단계에 해당한다.
 
 **단계 8.**  
-반응식: `C=CC(=O)Cl.C[C@H]1CNCCN1>>C=CC(=O)N1CCN[C@@H](C)C1`  
-정책: uspto, p=0.975, 분류: 0.0 Unrecognized  
-그림: 그림 4.8. `results/images/route_1/step_08.png` — 단계 8 반응 모식도.
+반응물: C=CC(=O)Cl, C[C@H]1CNCCN1  
+생성물: C=CC(=O)N1CCN[C@@H](C)C1  
+정책=uspto, p=0.975, 분류=0.0 Unrecognized
 
-아크릴로일 클로라이드(C=CC(=O)Cl)가 친전자체로 작용하여 피페라진 유도체(C[C@H]1CNCCN1)의 2차 아민 질소를 친핵체로 공격한다. 아크릴로일기의 염소가 이탈기로 떨어져 나가며 아미드 결합이 형성된다. 이 단계에서 피페라진의 한 질소에 아크릴로일기가 도입된다.
+![그림 4.1. 단계 8 반응 모식도](../images/route_1/step_08.png)
+
+아크릴로일 클로라이드(C=CC(=O)Cl)의 카보닐 탄소가 친전자체, 피페리딘 유도체(C[C@H]1CNCCN1)의 질소 원자가 친핵체로 작용하여 아미드 결합이 형성된다. 염화 이온(Cl⁻)이 이탈기로 떨어져 나가며, 입체화학이 유지된 채로 C–N 결합이 생성된다. 1차 아민에 의한 친핵성 아실 치환이다.
 
 **단계 9.**  
-반응식: `C=CC(=O)N1CCN[C@@H](C)C1.Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1`  
-정책: uspto, p=0.016, 분류: 0.0 Unrecognized  
-그림: 그림 4.9. `results/images/route_1/step_09.png` — 단계 9 반응 모식도.
+반응물: C=CC(=O)N1CCN[C@@H](C)C1, Cc1ccnc(C(C)C)c1-n1c(=O)nc(Cl)c2cc(F)c(Cl)nc21  
+생성물: C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1  
+정책=uspto, p=0.016, 분류=0.0 Unrecognized
 
-피페라진 유도체의 2차 아민 질소가 친핵체로 작용하여 피리미딘 고리의 C4 위치 염소(Cl)를 친전자체로 공격한다. 이 단계는 sp2 탄소(피리미딘 C4)에서 일어나므로 SN2가 아닌 SNAr(addition-elimination) 메커니즘으로 진행된다. 피리미딘 고리의 C4 염소가 이탈기로 떨어져 나가고, 피페라진 질소가 피리미딘 고리에 결합하여 C–N 결합이 형성된다. 생성물은 피페라진이 피리미딘 C4에 결합된 구조이다.
+![그림 4.1. 단계 9 반응 모식도](../images/route_1/step_09.png)
+
+이 단계는 피페리딘 질소가 피리미딘 C4 위치의 염소(Cl)를 치환하는 반응이다. 피리미딘 C4는 sp2 탄소이므로 SN2가 아니라 SNAr(addition-elimination) 메커니즘으로 진행된다. 피페리딘 질소가 친핵체로 작용하여 피리미딘 고리의 C4를 공격하여 사면체 중간체를 형성한 후, 염화 이온(Cl⁻)이 이탈기로 떨어져 나가면서 C–N 결합이 완성된다. 피페리딘 고리의 입체화학은 유지된다.
 
 **단계 10.**  
-반응식: `CC1(C)OB(c2c(O)cccc2F)OC1(C)C.C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1>>C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(-c4c(O)cccc4F)c(F)cc23)[C@@H](C)C1`  
-정책: uspto, p=0.002, 분류: 0.0 Unrecognized  
-그림: 그림 4.10. `results/images/route_1/step_10.png` — 단계 10 반응 모식도.
+반응물: CC1(C)OB(c2c(O)cccc2F)OC1(C)C, C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(Cl)c(F)cc23)[C@@H](C)C1  
+생성물: C=CC(=O)N1CCN(c2nc(=O)n(-c3c(C)ccnc3C(C)C)c3nc(-c4c(O)cccc4F)c(F)cc23)[C@@H](C)C1  
+정책=uspto, p=0.002, 분류=0.0 Unrecognized
 
-보호된 플루오로페놀(CC1(C)OB(c2c(O)cccc2F)OC1(C)C)이 친핵체로 작용하여 피페라진 질소를 친전자체로 공격한다. 이 단계에서 피페라질 고리의 질소에 플루오로페닐기가 도입된다. 보호기가 제거되면서 최종 생성물이 형성된다. 이 단계는 피페라진 질소의 친핵성 치환 반응으로, 보호된 페놀이 친핵체 역할을 한다.
+![그림 4.1. 단계 10 반응 모식도](../images/route_1/step_10.png)
 
-### 4.2 Route 6 (12단계, state score 0.8445680756022761)
+이 단계는 피나콜 보로네이트(CC1(C)OB(c2c(O)cccc2F)OC1(C)C)와 피리미딘 고리의 염소(Cl) 사이의 교차 커플링 반응이다. 피리미딘 C4의 염소가 이탈기로 떨어져 나가고, 페놀 고리(c4c(O)cccc4F)가 친핵체 역할의 보로네이트로부터 전달되어 결합한다. sp2 탄소에서의 치환이므로 SNAr 또는 Pd 촉매 교차 커플링 유형으로 분류된다. 최종 생성물은 목표 분자에 해당한다.
 
-Route 6은 보호기를 모두 명시한 가장 정합적인 경로이다. 총 12단계로 구성되며, 각 단계는 다음과 같다.
+---
+
+### 4.2. Route 6 (12단계, state score 0.8445680756022761)
 
 **단계 1.**  
-반응식: `C=C(C)B1OC(C)(C)C(C)(C)O1.Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O`  
-정책: uspto, p=0.036, 분류: 0.0 Unrecognized  
-그림: 그림 4.11. `results/images/route_6/step_01.png` — 단계 1 반응 모식도.
+반응물: C=C(C)B1OC(C)(C)C(C)(C)O1, Cc1ccnc(Br)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+생성물: C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+정책=uspto, p=0.036, 분류=0.0 Unrecognized
 
-이소프로페닐 보호기(C=C(C)B1OC(C)(C)C(C)(C)O1)가 피리미딘 고리의 C5 메틸기와 반응하여 고리 재배열이 일어난다. 친핵체는 피리미딘 고리의 질소 또는 탄소 중심이며, 친전자체는 이소프로페닐기의 이중결합 탄소이다. 이 단계에서 피리미딘 고리의 치환 패턴이 변화하여 C5 메틸기가 도입된다.
+![그림 4.2. 단계 1 반응 모식도](../images/route_6/step_01.png)
+
+이소프로페닐 보호기 도입 반응으로, C=C(C)B1OC(C)(C)C(C)(C)O1의 비닐 탄소가 친전자체, 피리미딘 고리의 관련 탄소가 친핵체로 작용하여 부가 반응이 일어난다. 브롬(Br)이 이탈기로 떨어져 나가며, route 1의 단계 2와 동일한 유형의 반응이다.
 
 **단계 2.**  
-반응식: `CC(=O)Cl.C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O>>C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21`  
-정책: ringbreaker, p=0.036, 분류: 0.0 Unrecognized  
-그림: 그림 4.12. `results/images/route_6/step_02.png` — 단계 2 반응 모식도.
+반응물: CC(=O)Cl, C=C(C)c1nccc(C)c1-n1c(N)c(C=O)c(O[Si](C(C)C)(C(C)C)C(C)C)nc1=O  
+생성물: C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C)C)(C(C)C)C(C)C)c2ccc(Cl)nc21  
+정책=ringbreaker, p=0.036, 분류=0.0 Unrecognized
 
-아세틸 클로라이드(CC(=O)Cl)가 친전자체로 작용하여 피리미딘 고리의 N1 질소를 친핵체로 공격한다. 아세틸기의 염소가 이탈기로 떨어져 나가며 아미드 결합이 형성된다. 동시에 피리미딘 고리의 C4 위치에 염소(Cl)가 도입된 피리미딘 고리가 형성된다. 이 단계는 피리미딘 고리의 개환-재폐환 과정을 포함한다.
+![그림 4.2. 단계 2 반응 모식도](../images/route_6/step_02.png)
+
+아세틸 클로라이드의 카보닐 탄소가 친전자체, 피리미딘 아미노기가 친핵체로 작용하여 아미드 결합이 형성된다. 염화 이온(Cl⁻)이 이탈기로 떨어져 나가며, 피리미딘-피리미딘온 골격의 아미노기가 아세틸화된다. ringbreaker 정책에 따른 고리 재배열이 동반된다.
 
 **단계 3.**  
-반응식: `C=C(C)c1nccc(C)c1-n1c
+반응물: C=C(C)c1nccc(C)c1-n1c(=O)nc(O[Si](C(C
 
 ## 5. 단계별 합성 조건
 
